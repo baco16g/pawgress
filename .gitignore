@@ -10,7 +10,11 @@ node_modules
 dist
 dist-ssr
 storybook-static
+site
 *.local
+
+# VitePress build cache
+docs/.vitepress/cache
 
 # Test / coverage
 coverage

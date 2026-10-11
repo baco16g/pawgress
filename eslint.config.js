@@ -32,7 +32,15 @@ function layerAndBelow(layer) {
 
 export default defineConfig(
   {
-    ignores: ['dist', 'storybook-static', 'coverage', 'node_modules'],
+    ignores: [
+      'dist',
+      'storybook-static',
+      'site',
+      'docs/.vitepress/dist',
+      'docs/.vitepress/cache',
+      'coverage',
+      'node_modules',
+    ],
   },
   {
     files: ['**/*.{ts,tsx}'],

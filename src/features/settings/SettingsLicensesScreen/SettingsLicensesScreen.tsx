@@ -12,6 +12,13 @@ interface LicenseEntry {
   sourceHref?: string
 }
 
+// ソフトウェアのhrefは常にhttps://の絶対URL（cleanRepositoryUrl由来）、
+// 相棒素材のhrefはpublic/licenses/配下への相対パス。後者はGitHub Pagesの
+// サブパス配信（/pawgress/）に追従させるため、BASE_URLを前置して解決する。
+function resolveHref(href: string): string {
+  return href.startsWith('http') ? href : `${import.meta.env.BASE_URL}${href}`
+}
+
 function LicenseList({ entries }: { entries: LicenseEntry[] }) {
   return (
     <ul className={styles.list}>
@@ -19,7 +26,7 @@ function LicenseList({ entries }: { entries: LicenseEntry[] }) {
         <li key={entry.name} className={styles.item}>
           <a
             className={styles.row}
-            href={entry.href}
+            href={resolveHref(entry.href)}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`${entry.name}のライセンスを見る（新しいタブで開きます）`}

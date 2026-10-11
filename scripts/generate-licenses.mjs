@@ -73,7 +73,7 @@ function getCompanionAssetEntries() {
       version: null,
       license: 'CC0',
       note: '相棒（犬）のドット絵素材',
-      href: '/licenses/pet-dogs-pack-LICENSE.txt',
+      href: 'licenses/pet-dogs-pack-LICENSE.txt',
       sourceHref: 'https://luizmelo.itch.io/pet-dogs-pack',
     },
     {
@@ -81,7 +81,7 @@ function getCompanionAssetEntries() {
       version: null,
       license: 'CC0',
       note: '相棒（猫）のドット絵素材',
-      href: '/licenses/pet-cats-pack-LICENSE.txt',
+      href: 'licenses/pet-cats-pack-LICENSE.txt',
       sourceHref: 'https://luizmelo.itch.io/pet-cat-pack',
     },
   ]

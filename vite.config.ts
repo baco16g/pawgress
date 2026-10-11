@@ -2,7 +2,12 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import { defineConfig } from 'vitest/config'
 
-export default defineConfig({
+// GitHub Pages はこのアプリを https://baco16g.github.io/pawgress/ から配信する。
+// 本番ビルドと vite preview のみサブパス base が必要（vite dev は root のまま）。
+const basePath = '/pawgress/'
+
+export default defineConfig(({ command, isPreview }) => ({
+  base: command === 'build' || isPreview ? basePath : '/',
   plugins: [
     react(),
     VitePWA({
@@ -20,10 +25,21 @@ export default defineConfig({
         background_color: '#f6f3ee',
         display: 'standalone',
         // 安全域（maskable iconのsafe zone）を確保した意匠ではないため、
-        // maskable purposeは付けない。
+        // maskable purposeは付けない。start_url/scopeは指定せず、
+        // vite-plugin-pwaが解決済みbaseから自動的に補う。
         icons: [
           { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
           { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' },
+        ],
+      },
+      workbox: {
+        // Storybook/VitePressを同じオリジンの別パスに同居させるため、
+        // Service WorkerのnavigationフォールバックをPawgressアプリの
+        // パス配下だけに限定する（出さないと他の2サイトへの直接アクセス・
+        // リロードがPawgressのshellに乗っ取られる）。
+        navigateFallbackDenylist: [
+          new RegExp(`^${basePath}storybook/`),
+          new RegExp(`^${basePath}docs/`),
         ],
       },
     }),
@@ -38,4 +54,4 @@ export default defineConfig({
     restoreMocks: true,
     unstubGlobals: true,
   },
-})
+}))

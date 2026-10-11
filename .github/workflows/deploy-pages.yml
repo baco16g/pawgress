@@ -1,0 +1,60 @@
+name: Deploy Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - run: npm ci
+
+      # prebuild / prebuild-storybook の npm pre-hook が generate-licenses を
+      # 自動実行するため、個別のステップは不要。
+      - run: npm run build
+      - run: npm run build-storybook
+      - run: npm run docs:build
+
+      - name: Assemble combined Pages site
+        run: |
+          set -euo pipefail
+          rm -rf site
+          mkdir -p site
+          cp -r dist/. site/
+          cp -r storybook-static site/storybook
+          cp -r docs/.vitepress/dist site/docs
+          cp site/index.html site/404.html
+
+      - uses: actions/configure-pages@v6
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
