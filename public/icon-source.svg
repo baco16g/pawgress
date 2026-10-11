@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+<title id="title">Pawgress app icon</title>
+<desc id="desc">Coral geometric paw and navy open daily cycle on a warm off-white background.</desc>
+<path fill="#f7f3ec" d="M0 0H512V512H0Z"/>
+<g id="cycle" fill="#172a3a"><path d="M256 64 A192 192 0 1 0 448 256 V216 H412 V236 H416 V256 A160 160 0 1 1 256 96 H284 V80 H268 V64 Z"/></g>
+<g id="paw-and-next-step" fill="#f27667">
+<rect x="140" y="211" width="43" height="46" rx="13"/>
+<rect x="192" y="188" width="49" height="51" rx="15"/>
+<rect x="250" y="169" width="53" height="58" rx="16"/>
+<rect x="312" y="147" width="57" height="69" rx="18"/>
+<rect x="380" y="104" width="49" height="46" rx="8"/>
+<path d="M205 364 C166 364 155 340 174 313 L219 263 C239 239 256 232 279 249 L327 297 C337 309 343 316 346 322 H314 V343 H292 V364 Z"/>
+</g>
+</svg>

@@ -1,0 +1,97 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: var(--nav-reserved-height, 0px);
+  overflow-x: hidden;
+}
+
+/* position:stickyはAndroid ChromeのURLバー開閉のたびに視覚的に再計算が崩れ、
+   stale offsetのまま固まる既知のバグがある（CSS unit選択では回避不可、実機で確認済み）。
+   fixedはscroll eventに依存せずcompositorが毎frame再計算するため採用する。 */
+.navContainer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  margin: 0 var(--space-16) var(--space-12);
+  margin-bottom: calc(var(--space-12) + env(safe-area-inset-bottom, 0px));
+  background-color: var(--color-surface);
+  border-radius: var(--radius-floating);
+  box-shadow: var(--shadow-surface);
+}
+
+.navList {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.navListItem {
+  display: flex;
+  flex: 1;
+}
+
+.navLink {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  flex: 1;
+  min-height: var(--touch-target-preferred);
+  padding: var(--space-8);
+  color: var(--color-nav-inactive);
+  font-size: var(--type-nav-size);
+  font-weight: var(--type-nav-weight);
+  line-height: var(--type-nav-line-height);
+  text-decoration: none;
+}
+
+.navIconWrap {
+  display: flex;
+  padding: var(--space-4) var(--space-12);
+  border-radius: var(--radius-floating);
+  transition: background-color var(--duration-fast) var(--easing-standard);
+}
+
+@media (hover: hover) {
+  .navLink:hover .navIconWrap {
+    background-color: var(--color-surface-subtle);
+  }
+}
+
+.navIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.navLinkActive {
+  color: var(--color-nav-active);
+  font-weight: 600;
+}
+
+/* fillだけだと内部detail（Inboxのslot線、CalendarDaysの日付dot）がicon本体と
+   同色で埋もれて消える。detail線のstrokeをnav pillの背景色へ変え、塗りの中へ
+   「切り抜き」として浮かび上がらせる。 */
+.navLinkActive .navIcon {
+  fill: currentColor;
+  stroke: var(--color-surface);
+}
+
+/* strokeはfillの上にpathの中心線沿いでpaintされ、内側半分がfillを侵食して
+   icon本体が小さく見える。paint-orderでfillを後にpaintし侵食分を覆う
+   （面積を持たないdetail線はfillに覆われないため、strokeの切り抜きは残る）。 */
+.navLinkActive .navIcon :is(circle, path, polyline, rect) {
+  paint-order: stroke;
+}

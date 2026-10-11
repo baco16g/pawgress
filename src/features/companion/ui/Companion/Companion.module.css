@@ -1,0 +1,205 @@
+.stage {
+  --companion-stage-padding: var(--space-4);
+
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  padding: var(--companion-stage-padding);
+  border-radius: var(--radius-surface);
+  background-color: var(--color-surface-subtle);
+  overflow: hidden;
+}
+
+.transparent {
+  --companion-stage-padding: 0px;
+
+  background-color: transparent;
+}
+
+.sprite {
+  position: relative;
+  width: var(--companion-size);
+  height: var(--companion-size);
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  transform-origin: 50% 63%;
+}
+
+@keyframes companion-sprite-loop {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: calc(-1 * var(--sprite-frame-count) * var(--companion-size));
+  }
+}
+
+.looping {
+  animation: companion-sprite-loop calc(var(--sprite-frame-count) * var(--duration-fast))
+    steps(var(--sprite-frame-count)) infinite;
+}
+
+@keyframes companion-react {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.reacts {
+  animation: companion-react 360ms var(--easing-standard);
+}
+
+/* 各settle系keyframesのsteps()は companionAssets.ts の frameCount - 1
+   と手動で一致させている（Chromiumの制約でsteps()にvar()を使えないため）。
+   frameCountを変更したらここも合わせて直すこと。 */
+@keyframes companion-settle-pleased-dog {
+  0% {
+    background-position-x: 0;
+  }
+  60% {
+    background-position-x: 0;
+    animation-timing-function: steps(2);
+  }
+  80% {
+    background-position-x: calc(-1 * (var(--sprite-frame-count) - 1) * var(--companion-size));
+  }
+  100% {
+    background-position-x: calc(-1 * (var(--sprite-frame-count) - 1) * var(--companion-size));
+  }
+}
+
+.settlePleasedDog {
+  animation: companion-settle-pleased-dog 2s alternate infinite;
+}
+
+.settlePleasedDog.reacts {
+  animation:
+    companion-settle-pleased-dog 2s alternate infinite,
+    companion-react 360ms var(--easing-standard);
+}
+
+@keyframes companion-settle-pleased-cat {
+  0% {
+    background-position-x: 0;
+  }
+  60% {
+    background-position-x: 0;
+    animation-timing-function: steps(3);
+  }
+  80% {
+    background-position-x: calc(-1 * (var(--sprite-frame-count) - 1) * var(--companion-size));
+  }
+  100% {
+    background-position-x: calc(-1 * (var(--sprite-frame-count) - 1) * var(--companion-size));
+  }
+}
+
+.settlePleasedCat {
+  animation: companion-settle-pleased-cat 2s alternate infinite;
+}
+
+.settlePleasedCat.reacts {
+  animation:
+    companion-settle-pleased-cat 2s alternate infinite,
+    companion-react 360ms var(--easing-standard);
+}
+
+@keyframes companion-settle-completed-dog {
+  0% {
+    background-position-x: 0;
+  }
+  50% {
+    background-position-x: 0;
+    animation-timing-function: steps(9);
+  }
+  75% {
+    background-position-x: calc(-1 * (var(--sprite-frame-count) - 1) * var(--companion-size));
+  }
+  100% {
+    background-position-x: calc(-1 * (var(--sprite-frame-count) - 1) * var(--companion-size));
+  }
+}
+
+.settleCompletedDog {
+  animation: companion-settle-completed-dog 5s alternate infinite;
+}
+
+.settleCompletedDog.reacts {
+  animation:
+    companion-settle-completed-dog 5s alternate infinite,
+    companion-react 360ms var(--easing-standard);
+}
+
+@keyframes companion-settle-completed-cat {
+  0% {
+    background-position-x: 0;
+  }
+  50% {
+    background-position-x: 0;
+    animation-timing-function: steps(12);
+  }
+  75% {
+    background-position-x: calc(-1 * (var(--sprite-frame-count) - 1) * var(--companion-size));
+  }
+  100% {
+    background-position-x: calc(-1 * (var(--sprite-frame-count) - 1) * var(--companion-size));
+  }
+}
+
+.settleCompletedCat {
+  animation: companion-settle-completed-cat 5s alternate infinite;
+}
+
+.settleCompletedCat.reacts {
+  animation:
+    companion-settle-completed-cat 5s alternate infinite,
+    companion-react 360ms var(--easing-standard);
+}
+
+@keyframes companion-settle-subdued-dog {
+  0% {
+    background-position-x: 0;
+  }
+  30% {
+    background-position-x: 0;
+    animation-timing-function: steps(6);
+  }
+  40% {
+    background-position-x: calc(-1 * (var(--sprite-frame-count) - 1) * var(--companion-size));
+  }
+  100% {
+    background-position-x: calc(-1 * (var(--sprite-frame-count) - 1) * var(--companion-size));
+  }
+}
+
+.settleSubduedDog {
+  animation: companion-settle-subdued-dog 10s alternate infinite;
+}
+
+@keyframes companion-settle-subdued-cat {
+  0% {
+    background-position-x: 0;
+  }
+  30% {
+    background-position-x: 0;
+    animation-timing-function: steps(7);
+  }
+  40% {
+    background-position-x: calc(-1 * (var(--sprite-frame-count) - 1) * var(--companion-size));
+  }
+  100% {
+    background-position-x: calc(-1 * (var(--sprite-frame-count) - 1) * var(--companion-size));
+  }
+}
+
+.settleSubduedCat {
+  animation: companion-settle-subdued-cat 10s alternate infinite;
+}

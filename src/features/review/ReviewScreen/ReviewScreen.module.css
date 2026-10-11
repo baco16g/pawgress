@@ -1,0 +1,84 @@
+.supportingText {
+  margin: var(--space-4) 0 0;
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line-height);
+  color: var(--color-text-secondary);
+  position: relative;
+  z-index: 1;
+}
+
+.reviewSheetContent {
+  padding: var(--space-16) var(--space-16) var(--space-24);
+}
+
+.section {
+  margin-bottom: var(--space-16);
+}
+
+.sectionHeading {
+  margin: 0 0 var(--space-8);
+  font-size: var(--type-section-heading-size);
+  font-weight: var(--type-section-heading-weight);
+  line-height: var(--type-section-heading-line-height);
+  color: var(--color-text-secondary);
+}
+
+.readonlyList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  margin: 0;
+  padding: 0;
+}
+
+.readonlyItem {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  min-height: var(--touch-target-min);
+  padding: var(--space-12) var(--space-16);
+  background-color: var(--color-surface);
+  border-radius: var(--radius-surface);
+  box-shadow: var(--shadow-task-row);
+}
+
+.readonlyMark {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: var(--color-complete);
+  color: #fff;
+}
+
+.readonlyTitle {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: var(--type-task-title-size);
+  font-weight: var(--type-task-title-weight);
+  line-height: var(--type-task-title-line-height);
+  color: var(--color-text-secondary);
+  text-decoration: line-through;
+  text-decoration-color: var(--color-text-secondary);
+}
+
+.dispositionList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  margin: 0;
+  padding: 0;
+}
+
+.footer {
+  margin-top: var(--space-24);
+}
+
+.completeButton {
+  width: 100%;
+}

@@ -1,0 +1,18 @@
+dist
+dist-ssr
+storybook-static
+coverage
+node_modules
+pnpm-lock.yaml
+package-lock.json
+
+# Hand-authored specification/planning prose, not app code. Markdown
+# formatting here (esp. illustrative code fences that are not real,
+# well-formed markup) is intentional; Prettier's own markdown/HTML
+# formatting has been observed to rewrite fence contents destructively.
+AGENTS.md
+docs/
+
+# 外部Skillのスナップショット。出所(.claude/skills/NOTICE.md)のままの内容を
+# 保つため、リフォーマットしない。
+.claude/skills/

@@ -1,0 +1,40 @@
+[data-atmosphere='powder-blue'] {
+  --atmosphere-wave-back: #ccdfe5;
+  --atmosphere-wave-front: #acccd8;
+  --atmosphere-gradient: linear-gradient(
+    180deg,
+    var(--atmosphere-powder-blue-top) 0%,
+    var(--color-canvas) 100%
+  );
+}
+
+[data-atmosphere='butter'] {
+  --atmosphere-wave-back: #efdcb3;
+  --atmosphere-wave-front: #e6c784;
+  --atmosphere-gradient: linear-gradient(
+    180deg,
+    var(--atmosphere-butter-top) 0%,
+    var(--color-canvas) 100%
+  );
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']):not([data-theme='dark']) [data-atmosphere='powder-blue'] {
+    --atmosphere-wave-back: #304f5a;
+    --atmosphere-wave-front: #25404b;
+  }
+  :root:not([data-theme='light']):not([data-theme='dark']) [data-atmosphere='butter'] {
+    --atmosphere-wave-back: #5c4b2d;
+    --atmosphere-wave-front: #4f3c22;
+  }
+}
+
+:root[data-theme='dark'] [data-atmosphere='powder-blue'] {
+  --atmosphere-wave-back: #304f5a;
+  --atmosphere-wave-front: #25404b;
+}
+
+:root[data-theme='dark'] [data-atmosphere='butter'] {
+  --atmosphere-wave-back: #5c4b2d;
+  --atmosphere-wave-front: #4f3c22;
+}

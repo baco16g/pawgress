@@ -1,0 +1,49 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Dependencies
+node_modules
+
+# Build output
+dist
+dist-ssr
+storybook-static
+*.local
+
+# Test / coverage
+coverage
+.tsbuildinfo
+
+# Generated at build/dev/test time (scripts/generate-licenses.mjs)
+src/features/settings/SettingsLicensesScreen/licenses.generated.json
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Local coding-agent tool state (not project source)
+.agents/
+.codex/
+.playwright-mcp/
+
+# Visual review screenshots (ephemeral QA evidence, not source)
+artifacts/
+
+# Internal AI-assisted development process artifacts (kept locally for
+# maintenance, not part of the assignment submission)
+AGENTS.md
+DESIGN.md
+docs/design-decisions.md
+docs/design-research-plan.md
+docs/reference/pawgress-visual-direction.png
+.claude/
+.mcp.json

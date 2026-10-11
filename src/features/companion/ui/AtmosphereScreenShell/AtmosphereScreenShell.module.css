@@ -1,0 +1,137 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  max-width: 28rem;
+  margin: 0 auto;
+  animation: screenEnter var(--duration-normal) var(--easing-standard);
+}
+
+@keyframes screenEnter {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.atmosphereZone {
+  position: relative;
+  flex-shrink: 0;
+  padding: var(--space-16) var(--space-16) 0;
+  overflow: hidden;
+  background: var(--atmosphere-gradient);
+}
+
+.atmosphereZone[data-atmosphere-modifier='peach']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 28%, var(--atmosphere-wash-peach) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.atmosphereZone[data-atmosphere-modifier='sage']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 28%, var(--atmosphere-wash-sage) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+  position: relative;
+  z-index: 1;
+}
+
+.dateLabel {
+  font-size: var(--type-meta-size);
+  font-weight: var(--type-meta-weight);
+  line-height: var(--type-meta-line-height);
+  color: var(--color-text-secondary);
+}
+
+.settingsEntry {
+  --icon-size: 20px; /* Settingsアイコンのsize propと合わせる */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-target-min);
+  height: var(--touch-target-min);
+  margin-right: calc((var(--icon-size) - var(--touch-target-min)) / 2);
+  border: none;
+  border-radius: var(--radius-surface);
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--easing-standard),
+    transform var(--duration-fast) var(--easing-standard);
+}
+
+.settingsEntry:hover,
+.settingsEntry:focus-visible {
+  background-color: var(--color-surface-subtle);
+}
+
+.settingsEntry:active {
+  transform: translateY(1px);
+}
+
+.pageTitle {
+  margin: var(--space-8) 0 0;
+  font-size: var(--type-page-title-size);
+  font-weight: var(--type-page-title-weight);
+  line-height: var(--type-page-title-line-height);
+  color: var(--color-text-primary);
+  position: relative;
+  z-index: 1;
+}
+
+.pageTitle:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 4px;
+  border-radius: var(--radius-control);
+}
+
+.companionWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: clamp(130px, 38vw, 160px);
+  margin-top: var(--space-8);
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.sheet {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+  margin-top: -10px;
+  background-color: var(--color-task-sheet);
+  border-radius: 24px 24px 0 0;
+}
+
+.sheetReserveNav {
+  box-shadow: 0 var(--nav-reserved-height, 0px) 0 0 var(--color-task-sheet);
+}
+
+.sheetContent {
+  flex: 1 1 auto;
+}

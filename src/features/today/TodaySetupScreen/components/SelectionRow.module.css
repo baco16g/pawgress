@@ -1,0 +1,91 @@
+.item {
+  list-style: none;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-surface);
+  box-shadow: var(--shadow-task-row);
+  overflow: hidden;
+  transition:
+    opacity var(--duration-normal) var(--easing-standard),
+    transform var(--duration-normal) var(--easing-standard);
+}
+
+@starting-style {
+  .item {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-12);
+  min-height: var(--touch-target-min);
+  padding: var(--space-12) var(--space-16);
+  cursor: pointer;
+  transition: filter var(--duration-fast) var(--easing-standard);
+}
+
+.row:hover {
+  filter: brightness(0.97);
+}
+
+.rowDisabled {
+  cursor: not-allowed;
+}
+
+.checkboxWrap {
+  position: relative;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin-top: calc((var(--type-task-title-size) * var(--type-task-title-line-height) - 22px) / 2);
+}
+
+.checkbox {
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  border: 2px solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  background-color: var(--color-surface);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--easing-standard),
+    border-color var(--duration-fast) var(--easing-standard);
+}
+
+.checkbox:checked {
+  border-color: var(--color-action-lifecycle-bg);
+  background-color: var(--color-action-lifecycle-bg);
+}
+
+.checkbox:disabled:not(:checked) {
+  cursor: not-allowed;
+  border-color: var(--color-border);
+}
+
+.checkbox:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.checkIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--color-action-lifecycle-fg);
+  pointer-events: none;
+}
+
+.title {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: var(--type-task-title-size);
+  font-weight: var(--type-task-title-weight);
+  line-height: var(--type-task-title-line-height);
+  color: var(--color-text-primary);
+}

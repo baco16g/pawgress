@@ -1,0 +1,117 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+  padding: var(--space-16);
+  max-width: 60rem;
+}
+
+.sectionTitle {
+  margin: 0 0 var(--space-12);
+  font-size: var(--type-section-heading-size);
+  font-weight: var(--type-section-heading-weight);
+  color: var(--color-text-primary);
+}
+
+.note {
+  margin: 0 0 var(--space-8);
+  font-size: var(--type-meta-size);
+  color: var(--color-text-secondary);
+}
+
+.swatchGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-16);
+}
+
+.colorSwatch {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  width: 15rem;
+}
+
+.colorBox {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-control);
+  border: 1px solid var(--color-border-strong);
+}
+
+.swatchLabel {
+  margin: 0;
+  font-size: var(--type-meta-size);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.swatchValue {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.typeScale {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+.typeRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  color: var(--color-text-primary);
+}
+
+.spaceRows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.spaceRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+}
+
+.spaceBar {
+  height: 16px;
+  background-color: var(--color-accent);
+  border-radius: 2px;
+}
+
+.radiusSwatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.radiusBox {
+  width: 64px;
+  height: 64px;
+  background-color: var(--color-accent);
+}
+
+.motionSwatch {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-control);
+  background-color: var(--color-accent);
+  transition-property: transform;
+  transition-timing-function: var(--easing-standard);
+}
+
+.motionSwatch:hover {
+  transform: scale(1.15);
+}
+
+.touchBox {
+  border-radius: var(--radius-control);
+  background-color: var(--color-surface-subtle);
+  border: 1px dashed var(--color-accent);
+}

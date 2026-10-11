@@ -1,0 +1,181 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  max-width: 28rem;
+  margin: 0 auto;
+  animation: screenFade var(--duration-normal) var(--easing-standard);
+}
+
+@keyframes screenFade {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.header {
+  position: relative;
+  flex-shrink: 0;
+  --atmosphere-accent-tint: color-mix(in srgb, var(--color-accent) 20%, var(--color-canvas));
+
+  padding: var(--space-24) var(--space-16) calc(var(--space-48) + var(--space-16));
+  overflow: hidden;
+}
+
+.header[data-atmosphere='powder-blue'],
+.header[data-atmosphere='butter'] {
+  background:
+    radial-gradient(
+      ellipse 65% 80% at 100% 78%,
+      var(--atmosphere-accent-tint) 0%,
+      transparent 100%
+    ),
+    var(--atmosphere-gradient);
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: var(--type-page-title-size);
+  font-weight: var(--type-page-title-weight);
+  line-height: var(--type-page-title-line-height);
+  color: var(--color-text-primary);
+}
+
+.supportingText {
+  margin: var(--space-4) 0 0;
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line-height);
+  color: var(--color-text-secondary);
+}
+
+.sheet {
+  position: relative;
+  z-index: 1;
+  margin-top: calc(-1 * var(--space-8));
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-task-sheet);
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 var(--nav-reserved-height, 0px) 0 0 var(--color-task-sheet);
+}
+
+.sheetContent {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+  padding: var(--space-16) 0 var(--space-24);
+}
+
+.detail {
+  padding: 0 var(--space-16);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.detailHeading {
+  margin: 0;
+  font-size: var(--type-section-heading-size);
+  font-weight: var(--type-section-heading-weight);
+  line-height: var(--type-section-heading-line-height);
+  color: var(--color-text-secondary);
+}
+
+.detailNote {
+  margin: 0;
+  font-size: var(--type-meta-size);
+  line-height: var(--type-meta-line-height);
+  color: var(--color-text-secondary);
+}
+
+.unifiedList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.unifiedRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-12);
+  min-height: var(--touch-target-min);
+  padding: var(--space-12) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.unifiedRow:last-child {
+  border-bottom: none;
+}
+
+.unifiedTitle {
+  font-size: var(--type-task-title-size);
+  font-weight: var(--type-task-title-weight);
+  line-height: var(--type-task-title-line-height);
+  color: var(--color-text-primary);
+}
+
+.unifiedOutcome {
+  flex-shrink: 0;
+  font-size: var(--type-meta-size);
+  line-height: var(--type-meta-line-height);
+  color: var(--color-text-secondary);
+}
+
+/* --color-complete単体はtext色として3.93:1までしか出ずAA未達のため、ink 25%を
+   混ぜて5.04:1まで上げる。 */
+.unifiedOutcome[data-outcome='completed'] {
+  color: color-mix(in srgb, var(--color-text-primary) 25%, var(--color-complete));
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-8);
+  max-width: 260px;
+  margin: var(--space-16) auto 0;
+  padding: 0 var(--space-16);
+  text-align: center;
+}
+
+.emptyIconWell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-floating);
+  background-color: var(--color-surface-subtle);
+}
+
+.emptyIcon {
+  color: var(--color-text-secondary);
+}
+
+.emptyHeading {
+  margin: 0;
+  font-size: var(--type-section-heading-size);
+  font-weight: var(--type-section-heading-weight);
+  line-height: var(--type-section-heading-line-height);
+  color: var(--color-text-primary);
+}
+
+.emptyText {
+  margin: 0;
+  font-size: var(--type-meta-size);
+  line-height: var(--type-meta-line-height);
+  color: var(--color-text-secondary);
+}

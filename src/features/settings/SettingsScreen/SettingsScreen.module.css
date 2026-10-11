@@ -1,0 +1,85 @@
+/* .contentはflex-direction:columnのflex containerで、子要素にmargin:autoがあると
+   align-items:stretchが無効化されcontent-based widthへ縮むため、width:100%で防ぐ。 */
+.page {
+  width: 100%;
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: var(--space-16) var(--space-16) var(--space-32);
+  animation: screenEnter var(--duration-normal) var(--easing-standard);
+}
+
+@keyframes screenEnter {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.title {
+  margin: 0 0 var(--space-24);
+  font-size: var(--type-page-title-size);
+  font-weight: var(--type-page-title-weight);
+  line-height: var(--type-page-title-line-height);
+  color: var(--color-text-primary);
+}
+
+.section {
+  margin-top: var(--space-24);
+}
+
+.section:first-of-type {
+  margin-top: 0;
+}
+
+.sectionHeading {
+  margin: 0 0 var(--space-8);
+  padding: 0 var(--space-4);
+  font-size: var(--type-section-heading-size);
+  font-weight: var(--type-section-heading-weight);
+  line-height: var(--type-section-heading-line-height);
+  color: var(--color-text-secondary);
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+  min-height: var(--touch-target-preferred);
+  padding: var(--space-12) var(--space-4);
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+.rowLabel {
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line-height);
+}
+
+.rowValue {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  color: var(--color-text-secondary);
+  font-size: var(--type-body-size);
+  flex-shrink: 0;
+}
