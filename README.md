@@ -44,7 +44,7 @@
 
 ## セットアップ
 
-Node.js 22 系を使用します（[.nvmrc](./.nvmrc)）。
+Node.js 24 系を使用します（[.nvmrc](./.nvmrc)）。
 
 ```bash
 npm install
