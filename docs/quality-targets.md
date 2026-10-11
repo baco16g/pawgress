@@ -55,7 +55,7 @@ Pawgressのprimary control最低44pxは維持します。48pxは可能な限り�
 
 | Target | Classification | Status | Evidence |
 | --- | --- | --- | --- |
-| WCAG 2.2 AA 準拠 | 外部標準 | Not measured | axe: 全画面・全viewport・両themeでviolations 0件。Lighthouse Accessibilityは100（自動判定24件中。手動確認が必要な10件はLighthouse側で対象外）。color-contrastがincompleteとなった要素はcomputed styleから実際の合成色で算出し、light/dark両themeで実測4.5:1基準を満たすことを確認済み（§3参照）。keyboard操作・visible focus・reduced motion・長い日本語タスク名の折り返しも確認済み（§3参照）。実機screen readerでの検証は未実施のため、AA全体準拠は申告しません |
+| WCAG 2.2 AA 準拠 | 外部標準 | Not measured | axe: 全画面・全viewport・両themeでviolations 0件。Lighthouse Accessibilityは100（自動判定24件中。手動確認が必要な10件はLighthouse側で対象外）。color-contrastがincompleteとなった要素はcomputed styleから実際の合成色で算出し、light/dark両themeで実測4.5:1基準を満たすことを確認済み（§3参照）。keyboard操作・visible focus・reduced motion・長い日本語タスク名の折り返しも確認済み（§3参照）。実機screen readerでの検証は未実施のため、AA全体準拠はPassにしません |
 | Touch target >= 24×24（SC 2.5.8） | 外部標準 | Pass | 到達可能な全画面・全状態×4 viewport×2 themeで24×24px未満の要素は0件 |
 | Primary touch target >= 44×44 | Pawgress の品質基準 | Pass | 実際に操作するprimary control（チェックボックス行・ボタン・ナビリンク・入力欄・確認ダイアログ）は全画面で44px以上。44px未満として検出された2件はいずれもprimary controlの対象外: Historyのdense date grid（意図的に24px枠を採用、月移動buttonは44px以上を維持）と、Settings LicensesのCC0素材パック「配布元を見る」という補助的なinline link（94×27.5px、24px基準は満たす） |
 | Touch target ~48×48（推奨） | Pawgress の品質基準 | Fail | 多くのprimary controlがちょうど44pxで、48pxまでは届いていません（例: Today Activeのタスク行・History月移動button等） |
@@ -139,7 +139,7 @@ history: 空（履歴0日分）
 
 - Lighthouse は2026-10-11に3回実測済みです（§2.1）。Core Web Vitalsはproduction field data（RUM）を取得する仕組みが無いため、引き続き`Not measured`です。lab evidence（LCP/CLS/TBT）はあります。
 - JSの予算（250KB）は確定しています。実測値（202.80 KB）は複数回のbuildではなく単一buildの測定です（bundle sizeはソースが同じであれば決定的なため、Lighthouseのような実行時変動はありません）。
-- Touch target（§1）: 24×24px・primary 44×44pxは到達可能な全画面で実測しPassです。48×48px（推奨）はFailで、ほとんどのprimary controlがちょうど44pxに留まっています。
+- Touch target（§1）: 24×24px・primary 44×44pxは到達可能な全画面で実測した結果Passです。48×48px（推奨）はFailで、ほとんどのprimary controlがちょうど44pxに留まっています。
 
 ### History Calendar — partial verification
 
