@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { describe, expect, it } from 'vitest'
@@ -27,7 +27,8 @@ function renderTodayAndReview() {
     ],
     { initialEntries: ['/today'] },
   )
-  return render(<RouterProvider router={router} />)
+  const view = render(<RouterProvider router={router} />)
+  return { ...view, router }
 }
 
 describe('TodayRoute — Setup → Active lifecycle', () => {
@@ -182,6 +183,37 @@ describe('TodayRoute ↔ ReviewRoute — full daily loop', () => {
     expect(screen.getByRole('heading', { name: '今日を振り返る' })).toBeInTheDocument()
     expect(screen.queryByRole('navigation', { name: '主要な画面' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: '設定' })).not.toBeInTheDocument()
+  })
+
+  it('Reviewで「1日を終える」とTodayへ戻り、Bottom Navigationが再び表示される', async () => {
+    const user = userEvent.setup()
+    renderTodayAndReview()
+
+    await user.click(screen.getByRole('checkbox', { name: '牛乳を買う' }))
+    await user.click(screen.getByRole('button', { name: '今日をはじめる' }))
+    await user.click(screen.getByRole('button', { name: '今日を振り返る' }))
+    await user.click(screen.getByRole('radio', { name: '明日に持ち越す' }))
+    await user.click(screen.getByRole('button', { name: '1日を終える' }))
+
+    expect(screen.getByRole('heading', { name: '今日はここまで' })).toBeInTheDocument()
+    expect(screen.getByRole('navigation', { name: '主要な画面' })).toBeInTheDocument()
+  })
+
+  it('Reviewから戻る操作でTodayへ戻っても、Bottom Navigationが再び表示される', async () => {
+    const user = userEvent.setup()
+    const { router } = renderTodayAndReview()
+
+    await user.click(screen.getByRole('checkbox', { name: '牛乳を買う' }))
+    await user.click(screen.getByRole('button', { name: '今日をはじめる' }))
+    await user.click(screen.getByRole('button', { name: '今日を振り返る' }))
+    expect(screen.queryByRole('navigation', { name: '主要な画面' })).not.toBeInTheDocument()
+
+    await act(async () => {
+      await router.navigate(-1)
+    })
+
+    expect(screen.getByRole('heading', { name: '今日のやること' })).toBeInTheDocument()
+    expect(screen.getByRole('navigation', { name: '主要な画面' })).toBeInTheDocument()
   })
 
   it('unfinished taskをInboxへ戻すdispositionを選べる', async () => {
