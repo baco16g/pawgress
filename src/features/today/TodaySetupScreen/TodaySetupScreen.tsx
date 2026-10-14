@@ -8,7 +8,6 @@ import { InlineAddRow } from '@/shared/ui/InlineAddRow/InlineAddRow'
 import { RestAction } from '@/features/today/TodaySetupScreen/components/RestAction'
 import { SelectionList } from '@/features/today/TodaySetupScreen/components/SelectionList'
 import { AtmosphereScreenShell } from '@/features/companion/ui/AtmosphereScreenShell/AtmosphereScreenShell'
-import { TODAY_SETUP_CAPACITY_MESSAGE } from '@/domain/daily-lifecycle/dailyLifecycleStore'
 import type { Task } from '@/domain/task/task'
 import { Button } from '@/shared/ui/Button/Button'
 import { Toast } from '@/shared/ui/Toast/Toast'
@@ -134,7 +133,7 @@ export function TodaySetupScreen({
         />
         {!canCaptureInboxCandidate ? (
           <p id={capacityMessageId} className={styles.capacityMessage} role="status">
-            {TODAY_SETUP_CAPACITY_MESSAGE}
+            Inboxがいっぱいです。今日やるタスクを選んで「今日をはじめる」を押すと空きができます。
           </p>
         ) : null}
 

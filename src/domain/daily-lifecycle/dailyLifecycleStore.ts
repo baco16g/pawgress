@@ -21,12 +21,6 @@ export function canAddInboxTask(inboxTasks: Task[], limit: number = MAX_INBOX_TA
   return inboxTasks.length < limit
 }
 
-export const INBOX_CAPACITY_MESSAGE =
-  'Inboxがいっぱいです。不要なタスクを削除すると空きができます。'
-
-export const TODAY_SETUP_CAPACITY_MESSAGE =
-  'Inboxがいっぱいです。今日やるタスクを選んで「今日をはじめる」を押すと空きができます。'
-
 export type DailyLifecycleAction =
   | { type: 'inbox/appendTask'; title: string }
   | { type: 'inbox/prependTask'; title: string }

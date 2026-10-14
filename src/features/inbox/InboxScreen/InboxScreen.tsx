@@ -4,7 +4,6 @@ import type { AtmospherePreset } from '@/features/companion/model/companionAtmos
 import { AtmosphereWave } from '@/features/companion/ui/AtmosphereWave/AtmosphereWave'
 import { InboxTaskList } from '@/features/inbox/InboxTaskList/InboxTaskList'
 import { InlineAddRow } from '@/shared/ui/InlineAddRow/InlineAddRow'
-import { INBOX_CAPACITY_MESSAGE } from '@/domain/daily-lifecycle/dailyLifecycleStore'
 import type { Task } from '@/domain/task/task'
 import styles from './InboxScreen.module.css'
 
@@ -42,7 +41,7 @@ export function InboxScreen({
           />
           {!canCapture ? (
             <p id={capacityMessageId} className={styles.capacityMessage} role="status">
-              {INBOX_CAPACITY_MESSAGE}
+              Inboxがいっぱいです。不要なタスクを削除すると空きができます。
             </p>
           ) : null}
 
