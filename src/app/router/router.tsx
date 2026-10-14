@@ -16,7 +16,7 @@ import { TodayRoute } from '@/features/today/routes/TodayRoute'
 export const router = createBrowserRouter(
   [
     {
-      element: <AppLayout persist />,
+      element: <AppLayout />,
       children: [
         { index: true, element: <Navigate to="/today" replace /> },
         { path: '/today', element: <TodayRoute /> },

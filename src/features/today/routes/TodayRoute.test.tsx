@@ -3,12 +3,18 @@ import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AppLayout } from '@/app/router/AppLayout/AppLayout'
+import { INITIAL_LIFECYCLE_STATE } from '@/testing/dailyLifecycleFixtures'
 import { ReviewRoute } from '@/features/review/routes/ReviewRoute'
 import { TodayRoute } from './TodayRoute'
 
 function renderTodayRoute() {
   const router = createMemoryRouter(
-    [{ element: <AppLayout />, children: [{ path: '/', element: <TodayRoute /> }] }],
+    [
+      {
+        element: <AppLayout initialLifecycleState={INITIAL_LIFECYCLE_STATE} />,
+        children: [{ path: '/', element: <TodayRoute /> }],
+      },
+    ],
     { initialEntries: ['/'] },
   )
   return render(<RouterProvider router={router} />)
@@ -18,7 +24,7 @@ function renderTodayAndReview(initialPath = '/today') {
   const router = createMemoryRouter(
     [
       {
-        element: <AppLayout />,
+        element: <AppLayout initialLifecycleState={INITIAL_LIFECYCLE_STATE} />,
         children: [
           { path: '/today', element: <TodayRoute /> },
           { path: '/review', element: <ReviewRoute /> },

@@ -12,11 +12,9 @@ import {
 import { resolveStaleTodayTasks } from '@/domain/daily-lifecycle/todayLifecycle'
 import { getProductDateKey } from '@/domain/product-day/productDay'
 import { createTask } from '@/domain/task/task'
-import { INITIAL_LIFECYCLE_STATE } from './__fixtures__/dailyLifecycleFixtures'
 
-// 実際の初回起動（persist=true、保存データ無し）専用。INITIAL_LIFECYCLE_STATEは
-// Storybook/既存テストが依存しているためここでは使わず、「例：」付きで明らかに
-// サンプルと分かるtaskをInboxにだけ置く（削除で消せるように）。
+// 保存データが無い初回起動用。「例：」付きで明らかにサンプルと分かるtaskを
+// Inboxにだけ置く（削除で消せるように）。
 const FIRST_LAUNCH_STATE: DailyLifecycleState = {
   todayTasks: [],
   inboxCandidates: [
@@ -27,9 +25,7 @@ const FIRST_LAUNCH_STATE: DailyLifecycleState = {
   historyRecords: {},
 }
 
-function buildInitialState(persist: boolean, currentDateKey: string): DailyLifecycleState {
-  if (!persist) return INITIAL_LIFECYCLE_STATE
-
+function loadInitialState(currentDateKey: string): DailyLifecycleState {
   const stored = loadDailyLifecycleState()
   if (!stored) return FIRST_LAUNCH_STATE
 
@@ -44,13 +40,18 @@ function buildInitialState(persist: boolean, currentDateKey: string): DailyLifec
 
 export interface DailyLifecycleProviderProps {
   children: ReactNode
-  persist?: boolean
+  // 渡すと保存データを読み書きせず、このstateから始める（Storybook・テスト用）。
+  initialState?: DailyLifecycleState
 }
 
-export function DailyLifecycleProvider({ children, persist = false }: DailyLifecycleProviderProps) {
+export function DailyLifecycleProvider({ children, initialState }: DailyLifecycleProviderProps) {
   const [initial] = useState(() => {
     const dateKey = getProductDateKey()
-    return { dateKey, state: buildInitialState(persist, dateKey) }
+    return {
+      dateKey,
+      persist: initialState === undefined,
+      state: initialState ?? loadInitialState(dateKey),
+    }
   })
   const [state, dispatch] = useReducer(dailyLifecycleReducer, initial.state)
   // stateがどのProduct Dayのものか。保存時刻ではなくこの日付で保存しないと、
@@ -87,9 +88,9 @@ export function DailyLifecycleProvider({ children, persist = false }: DailyLifec
   }, [rollOverIfDayChanged])
 
   useEffect(() => {
-    if (!persist) return
+    if (!initial.persist) return
     saveDailyLifecycleState(stateDateKey, state)
-  }, [persist, state, stateDateKey])
+  }, [initial.persist, state, stateDateKey])
 
   return (
     <DailyLifecycleContext.Provider value={{ state, dispatch: dispatchForCurrentDay }}>

@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { TodaySetupScreen } from '@/features/today/TodaySetupScreen/TodaySetupScreen'
 import { createTask } from '@/domain/task/task'
 import { AppLayout } from '@/app/router/AppLayout/AppLayout'
+import { INITIAL_LIFECYCLE_STATE } from '@/testing/dailyLifecycleFixtures'
 import { HistoryRoute } from '@/features/history/routes/HistoryRoute'
 import { InboxRoute } from '@/features/inbox/routes/InboxRoute'
 import { ReviewRoute } from '@/features/review/routes/ReviewRoute'
@@ -25,7 +26,7 @@ function renderApp(initialPath: string) {
   const router = createMemoryRouter(
     [
       {
-        element: <AppLayout />,
+        element: <AppLayout initialLifecycleState={INITIAL_LIFECYCLE_STATE} />,
         children: [
           { path: '/today', element: <TodayRoute /> },
           { path: '/inbox', element: <InboxRoute /> },

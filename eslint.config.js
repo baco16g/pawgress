@@ -97,6 +97,11 @@ export default defineConfig(
               from: { element: { type: 'app-state' } },
               allow: layerAndBelow('domain'),
             },
+            {
+              // fixtureをdomainの型・factoryで組み立てるため、domain以下だけを許可する。
+              from: { element: { type: 'testing' } },
+              allow: layerAndBelow('domain'),
+            },
           ],
         },
       ],

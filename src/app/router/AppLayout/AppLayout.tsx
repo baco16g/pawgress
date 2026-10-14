@@ -5,6 +5,7 @@ import { NavLink, Outlet } from 'react-router'
 import { DailyLifecycleProvider } from '@/app/providers/DailyLifecycleProvider'
 import { SettingsProvider } from '@/app/providers/SettingsProvider'
 import { NavVisibilityContext, useNavVisibility } from '@/app/state/navVisibilityContext'
+import type { DailyLifecycleState } from '@/domain/daily-lifecycle/dailyLifecycleStore'
 import styles from './AppLayout.module.css'
 
 // lucideの標準Inboxはslot線→tray本体の順にpaintするため、active状態でfillすると
@@ -41,13 +42,13 @@ function NavVisibilityProvider({ children }: { children: ReactNode }) {
 }
 
 export interface AppLayoutProps {
-  persist?: boolean
+  initialLifecycleState?: DailyLifecycleState
 }
 
-export function AppLayout({ persist = false }: AppLayoutProps = {}) {
+export function AppLayout({ initialLifecycleState }: AppLayoutProps = {}) {
   return (
     <SettingsProvider>
-      <DailyLifecycleProvider persist={persist}>
+      <DailyLifecycleProvider initialState={initialLifecycleState}>
         <NavVisibilityProvider>
           <AppLayoutShell />
         </NavVisibilityProvider>

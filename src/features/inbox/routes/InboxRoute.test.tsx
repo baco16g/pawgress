@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { describe, expect, it } from 'vitest'
 import { AppLayout } from '@/app/router/AppLayout/AppLayout'
+import { INITIAL_LIFECYCLE_STATE } from '@/testing/dailyLifecycleFixtures'
 import { InboxRoute } from './InboxRoute'
 import { ReviewRoute } from '@/features/review/routes/ReviewRoute'
 import { TodayRoute } from '@/features/today/routes/TodayRoute'
@@ -11,7 +12,7 @@ function renderApp(initialPath: string) {
   const router = createMemoryRouter(
     [
       {
-        element: <AppLayout />,
+        element: <AppLayout initialLifecycleState={INITIAL_LIFECYCLE_STATE} />,
         children: [
           { path: '/today', element: <TodayRoute /> },
           { path: '/inbox', element: <InboxRoute /> },

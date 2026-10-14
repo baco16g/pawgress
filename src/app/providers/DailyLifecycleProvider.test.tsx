@@ -21,9 +21,9 @@ describe('DailyLifecycleProvider', () => {
     window.localStorage.clear()
   })
 
-  it('persist=trueで保存データが無い（本当の初回起動）場合、「例：」付きのsample taskをInboxに表示する', () => {
+  it('保存データが無い（本当の初回起動）場合、「例：」付きのsample taskをInboxに表示する', () => {
     render(
-      <DailyLifecycleProvider persist>
+      <DailyLifecycleProvider>
         <InboxTitles />
       </DailyLifecycleProvider>,
     )
@@ -32,7 +32,7 @@ describe('DailyLifecycleProvider', () => {
     expect(screen.getByText('例：資料を確認する')).toBeInTheDocument()
   })
 
-  it('persist=trueで保存データがある場合は、sample taskではなく保存された内容を表示する', () => {
+  it('保存データがある場合は、sample taskではなく保存された内容を表示する', () => {
     saveDailyLifecycleState(getProductDateKey(), {
       todayTasks: [],
       inboxCandidates: [{ id: 'saved-1', title: '保存されたタスク', completed: false }],
@@ -41,13 +41,40 @@ describe('DailyLifecycleProvider', () => {
     })
 
     render(
-      <DailyLifecycleProvider persist>
+      <DailyLifecycleProvider>
         <InboxTitles />
       </DailyLifecycleProvider>,
     )
 
     expect(screen.getByText('保存されたタスク')).toBeInTheDocument()
     expect(screen.queryByText('例：牛乳を買う')).not.toBeInTheDocument()
+  })
+
+  it('initialStateを渡すと、保存データを読まずにそのstateから始め、保存もしない', () => {
+    saveDailyLifecycleState(getProductDateKey(), {
+      todayTasks: [],
+      inboxCandidates: [{ id: 'saved-1', title: '保存されたタスク', completed: false }],
+      carryOverCandidates: [],
+      historyRecords: {},
+    })
+    const storedBefore = window.localStorage.getItem('pawgress.dailyLifecycle.v1')
+
+    render(
+      <DailyLifecycleProvider
+        initialState={{
+          todayTasks: [],
+          inboxCandidates: [{ id: 'seed-1', title: '渡したタスク', completed: false }],
+          carryOverCandidates: [],
+          historyRecords: {},
+        }}
+      >
+        <InboxTitles />
+      </DailyLifecycleProvider>,
+    )
+
+    expect(screen.getByText('渡したタスク')).toBeInTheDocument()
+    expect(screen.queryByText('保存されたタスク')).not.toBeInTheDocument()
+    expect(window.localStorage.getItem('pawgress.dailyLifecycle.v1')).toBe(storedBefore)
   })
 })
 
@@ -130,7 +157,7 @@ describe('DailyLifecycleProvider — 開いたまま日付が変わった場合'
 
   it('日付が変わった後の操作では、先に前日のtodayTasksを前回からの続きへ移す', () => {
     const view = render(
-      <DailyLifecycleProvider persist>
+      <DailyLifecycleProvider>
         <DayProbe />
       </DailyLifecycleProvider>,
     )
@@ -147,7 +174,7 @@ describe('DailyLifecycleProvider — 開いたまま日付が変わった場合'
     // 再読み込みしても、前日のtaskが今日のタスクに戻らない。
     view.unmount()
     render(
-      <DailyLifecycleProvider persist>
+      <DailyLifecycleProvider>
         <DayProbe />
       </DailyLifecycleProvider>,
     )
@@ -157,7 +184,7 @@ describe('DailyLifecycleProvider — 開いたまま日付が変わった場合'
 
   it('日付が変わった後にタブが再表示されると、操作を待たずに前日のtodayTasksを移す', () => {
     render(
-      <DailyLifecycleProvider persist>
+      <DailyLifecycleProvider>
         <DayProbe />
       </DailyLifecycleProvider>,
     )
@@ -174,7 +201,7 @@ describe('DailyLifecycleProvider — 開いたまま日付が変わった場合'
 
   it('日付が変わる前に描画された画面からの、前日の日付つきの操作は反映しない', () => {
     render(
-      <DailyLifecycleProvider persist>
+      <DailyLifecycleProvider>
         <DayProbe />
       </DailyLifecycleProvider>,
     )

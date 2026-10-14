@@ -228,12 +228,12 @@ sequenceDiagram
     participant todayLifecycle as todayLifecycle.resolveStaleTodayTasks
 
     Browser->>main.tsx: load
-    main.tsx->>AppLayout: render（router.tsx: persist=true）
+    main.tsx->>AppLayout: render（router.tsx）
     AppLayout->>SettingsProvider: mount
     SettingsProvider->>settingsStorage: loadSettings()
     settingsStorage-->>SettingsProvider: SettingsState（無ければDEFAULT_SETTINGS）
 
-    AppLayout->>DailyLifecycleProvider: mount（persist=true）
+    AppLayout->>DailyLifecycleProvider: mount
     DailyLifecycleProvider->>dailyLifecycleStorage: loadDailyLifecycleState()
     dailyLifecycleStorage-->>DailyLifecycleProvider: {dateKey, state} または null
     alt 保存データあり
@@ -244,7 +244,7 @@ sequenceDiagram
             todayLifecycle-->>DailyLifecycleProvider: そのまま
         end
     else 保存データなし
-        DailyLifecycleProvider->>DailyLifecycleProvider: INITIAL_LIFECYCLE_STATE（seed）
+        DailyLifecycleProvider->>DailyLifecycleProvider: FIRST_LAUNCH_STATE（「例：」付きのsample task 2件）
     end
     DailyLifecycleProvider-->>AppLayout: 初期state確定
 ```
@@ -446,9 +446,9 @@ Bottom Navigation を隠すのは Review だけです。`ReviewRoute` が `useHi
 | 対象 | storage key | 保存先 | 保存タイミング | 日付またぎ時の扱い |
 |---|---|---|---|---|
 | `SettingsState`（文字サイズ/テーマ/アニメーション/相棒種別/最大タスク量） | `pawgress.settings.v1` | `localStorage` | 変更の都度（`useEffect`） | 対象外（dateKeyを持たない） |
-| `DailyLifecycleState`（todayTasks/inboxCandidates/carryOverCandidates/historyRecords） | `pawgress.dailyLifecycle.v1` | `localStorage` | state変化の都度（`useEffect`、`persist=true`時のみ）。`dateKey` は保存時刻ではなく state が属する Product Day | 起動時は `resolveStaleTodayTasks`、起動中は `today/rollover` で `todayTasks` を `carryOverCandidates` へ退避（§4.1） |
+| `DailyLifecycleState`（todayTasks/inboxCandidates/carryOverCandidates/historyRecords） | `pawgress.dailyLifecycle.v1` | `localStorage` | state変化の都度（`useEffect`、`initialLifecycleState` 未指定時のみ）。`dateKey` は保存時刻ではなく state が属する Product Day | 起動時は `resolveStaleTodayTasks`、起動中は `today/rollover` で `todayTasks` を `carryOverCandidates` へ退避（§4.1） |
 
-`persist` prop（`AppLayout` → `DailyLifecycleProvider`）は production entrypoint（`router.tsx`）でのみ `true` です。Storybook の `app/router/__fixtures__/*.stories.tsx` やテストは指定せず、daily lifecycle は常に `INITIAL_LIFECYCLE_STATE` の固定 seed から始まり、その localStorage には触れません（再現性を優先）。`SettingsProvider` は `persist` に関係なく常に `pawgress.settings.v1` を読み書きするため、設定を変えるテストは前後で localStorage をクリアしています。
+production entrypoint（`router.tsx`）は `<AppLayout />` をそのまま使い、daily lifecycle を localStorage から復元・保存します。Storybook の `app/router/__fixtures__/*.stories.tsx` やテストは `initialLifecycleState`（`AppLayout` → `DailyLifecycleProvider` の `initialState`）に `src/testing/dailyLifecycleFixtures.ts` の `INITIAL_LIFECYCLE_STATE` を渡し、固定 seed から始めます。このとき daily lifecycle の localStorage には触れません（再現性を優先）。seed は `src/testing/` にあり、本番コードからの import は eslint の境界チェックで禁止されています。`SettingsProvider` はこの指定に関係なく常に `pawgress.settings.v1` を読み書きするため、設定を変えるテストは前後で localStorage をクリアしています。
 
 両 storage は validate + try/catch で外部境界を守ります（壊れた/旧shapeのデータは安全に初期値へ fallback）。実装は `src/app/persistence/settingsStorage.ts` / `src/app/persistence/dailyLifecycleStorage.ts` を参照してください。
 
@@ -462,7 +462,7 @@ state は、それを必要とする最も狭い範囲に置いています。�
 
 | state | 持ち主 | 書き換える経路 | 寿命 | 永続化 |
 |---|---|---|---|---|
-| `DailyLifecycleState` | `DailyLifecycleProvider`（`useReducer`） | route が `dispatch` → provider が日付の変化を確認 → `dailyLifecycleReducer` | `AppLayout` がマウントされている間 | §6（`persist=true` のときのみ） |
+| `DailyLifecycleState` | `DailyLifecycleProvider`（`useReducer`） | route が `dispatch` → provider が日付の変化を確認 → `dailyLifecycleReducer` | `AppLayout` がマウントされている間 | §6（`initialLifecycleState` 未指定時のみ） |
 | state が属する Product Day（`stateDateKey`） | `DailyLifecycleProvider`（`useState`） | 日付の変化を検知したとき（§4.1） | 同上 | 保存時の `dateKey` として使う |
 | `SettingsState` | `SettingsProvider`（`useState`） | `updateSettings` / `resetSettings` | 同上 | §6（常に） |
 | Bottom Navigation の表示（`hideNav`） | `AppLayout` 内の `NavVisibilityProvider` | `ReviewRoute` の `useHideNavWhileMounted()` だけ | 同上 | なし |

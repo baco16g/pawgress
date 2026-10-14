@@ -4,6 +4,7 @@ import { act } from 'react'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { describe, expect, it } from 'vitest'
 import { AppLayout } from '@/app/router/AppLayout/AppLayout'
+import { INITIAL_LIFECYCLE_STATE } from '@/testing/dailyLifecycleFixtures'
 import { HistoryRoute } from './HistoryRoute'
 import { InboxRoute } from '@/features/inbox/routes/InboxRoute'
 import { ReviewRoute } from '@/features/review/routes/ReviewRoute'
@@ -13,7 +14,7 @@ function renderApp(initialPath: string) {
   const router = createMemoryRouter(
     [
       {
-        element: <AppLayout />,
+        element: <AppLayout initialLifecycleState={INITIAL_LIFECYCLE_STATE} />,
         children: [
           { path: '/today', element: <TodayRoute /> },
           { path: '/inbox', element: <InboxRoute /> },
@@ -28,9 +29,6 @@ function renderApp(initialPath: string) {
   return { ...view, router }
 }
 
-// HistoryはBottom Navigationのprimary destination。
-// Setup中はBottom Navigation自体が隠れるため、Setupからの遷移を含め多くのテストで
-// router.navigateを直接呼び、production UIのnav状態に依存しない（既存の方針を維持）。
 async function goTo(router: ReturnType<typeof renderApp>['router'], path: string) {
   await act(async () => {
     await router.navigate(path)

@@ -4,6 +4,7 @@ import { act } from 'react'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { describe, expect, it } from 'vitest'
 import { AppLayout } from '@/app/router/AppLayout/AppLayout'
+import { INITIAL_LIFECYCLE_STATE } from '@/testing/dailyLifecycleFixtures'
 import { HistoryRoute } from '@/features/history/routes/HistoryRoute'
 import { InboxRoute } from '@/features/inbox/routes/InboxRoute'
 import { SettingsRoute } from './SettingsRoute'
@@ -14,7 +15,7 @@ function renderApp(initialPath: string) {
   const router = createMemoryRouter(
     [
       {
-        element: <AppLayout />,
+        element: <AppLayout initialLifecycleState={INITIAL_LIFECYCLE_STATE} />,
         children: [
           { path: '/today', element: <TodayRoute /> },
           { path: '/inbox', element: <InboxRoute /> },

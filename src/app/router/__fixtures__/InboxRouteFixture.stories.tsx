@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { AppLayout } from '../AppLayout/AppLayout'
+import { INITIAL_LIFECYCLE_STATE } from '@/testing/dailyLifecycleFixtures'
 import { InboxRoute } from '@/features/inbox/routes/InboxRoute'
 import { TodayRoute } from '@/features/today/routes/TodayRoute'
 
@@ -10,7 +11,7 @@ function RouteFrame() {
   const router = createMemoryRouter(
     [
       {
-        element: <AppLayout />,
+        element: <AppLayout initialLifecycleState={INITIAL_LIFECYCLE_STATE} />,
         children: [
           { path: '/today', element: <TodayRoute /> },
           { path: '/inbox', element: <InboxRoute /> },
