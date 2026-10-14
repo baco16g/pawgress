@@ -1,6 +1,35 @@
 import type { DailyHistoryRecord } from '@/domain/history/history'
 import type { Task } from '@/domain/task/task'
 
+export const MIN_TODAY_TASKS = 1
+
+export type TodayLifecycleState = 'setup' | 'active' | 'rest' | 'done'
+
+// Review済みの日はkind:'active'（取り組んだ日）の記録として残るため、それを「完了」と読む。
+export function deriveTodayLifecycleState(
+  todayTasks: readonly Task[],
+  todayRecord: DailyHistoryRecord | undefined,
+): TodayLifecycleState {
+  if (todayTasks.length > 0) return 'active'
+  if (todayRecord?.kind === 'rest') return 'rest'
+  if (todayRecord?.kind === 'active') return 'done'
+  return 'setup'
+}
+
+export function toggleTodaySelection(
+  selectedIds: ReadonlySet<string>,
+  id: string,
+  maxSelection: number,
+): ReadonlySet<string> {
+  const next = new Set(selectedIds)
+  if (next.has(id)) {
+    next.delete(id)
+  } else if (next.size < maxSelection) {
+    next.add(id)
+  }
+  return next
+}
+
 export interface TodayStartResult {
   todayTasks: Task[]
   remainingInbox: Task[]

@@ -8,9 +8,12 @@ import { TodayDoneScreen } from '@/features/today/TodayDoneScreen/TodayDoneScree
 import { TodayRestScreen } from '@/features/today/TodayRestScreen/TodayRestScreen'
 import { TodaySetupScreen } from '@/features/today/TodaySetupScreen/TodaySetupScreen'
 import { canAddInboxTask } from '@/domain/daily-lifecycle/dailyLifecycleStore'
+import {
+  deriveTodayLifecycleState,
+  MIN_TODAY_TASKS,
+  toggleTodaySelection,
+} from '@/domain/daily-lifecycle/todayLifecycle'
 import { formatTodayLabel, getProductDateKey } from '@/domain/product-day/productDay'
-
-const MIN_SELECTION = 1
 
 export function TodayRoute() {
   const navigate = useNavigate()
@@ -19,30 +22,16 @@ export function TodayRoute() {
 
   const todayDateKey = getProductDateKey()
   const companionVariant = getDailyCompanionVariant(settings.companionSpecies, todayDateKey)
-  const isRestToday = state.historyRecords[todayDateKey]?.kind === 'rest'
-  const isReviewedToday = state.historyRecords[todayDateKey]?.kind === 'active'
-  const lifecycleState =
-    state.todayTasks.length > 0
-      ? 'active'
-      : isRestToday
-        ? 'rest'
-        : isReviewedToday
-          ? 'done'
-          : 'setup'
+  const lifecycleState = deriveTodayLifecycleState(
+    state.todayTasks,
+    state.historyRecords[todayDateKey],
+  )
   const [selectedIds, setSelectedIds] = useState<ReadonlySet<string>>(new Set())
   const [justCancelledRest, setJustCancelledRest] = useState(false)
 
   const handleToggleSelect = (id: string) => {
     setJustCancelledRest(false)
-    setSelectedIds((current) => {
-      const next = new Set(current)
-      if (next.has(id)) {
-        next.delete(id)
-      } else if (next.size < settings.maxTodayTasks) {
-        next.add(id)
-      }
-      return next
-    })
+    setSelectedIds((current) => toggleTodaySelection(current, id, settings.maxTodayTasks))
   }
 
   const handleAddCandidate = (title: string) => {
@@ -51,7 +40,7 @@ export function TodayRoute() {
   }
 
   const handleStartToday = () => {
-    if (selectedIds.size < MIN_SELECTION) return
+    if (selectedIds.size < MIN_TODAY_TASKS) return
 
     setJustCancelledRest(false)
     dispatch({ type: 'today/start', selectedIds })
@@ -111,7 +100,7 @@ export function TodayRoute() {
         carryOverCandidates={state.carryOverCandidates}
         inboxCandidates={state.inboxCandidates}
         selectedIds={selectedIds}
-        minSelection={MIN_SELECTION}
+        minSelection={MIN_TODAY_TASKS}
         maxSelection={settings.maxTodayTasks}
         companionSpecies={settings.companionSpecies}
         companionVariant={companionVariant}

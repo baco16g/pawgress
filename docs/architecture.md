@@ -108,7 +108,7 @@ graph TD
 
 ## 2. Today Lifecycle 状態遷移
 
-`TodayRoute`（`src/features/today/routes/TodayRoute.tsx`）は、`lifecycleState` を `DailyLifecycleState` から導出します。専用の local state は持たず、常に `todayTasks` / `historyRecords` から導出します（route の unmount/remount に左右されないため）。
+`TodayRoute`（`src/features/today/routes/TodayRoute.tsx`）は、表示する画面（`lifecycleState`）を `deriveTodayLifecycleState`（`src/domain/daily-lifecycle/todayLifecycle.ts`）で `DailyLifecycleState` から導出します。専用の local state は持たず、常に `todayTasks` / 当日の `historyRecords` から導出します（route の unmount/remount に左右されないため）。
 
 ```mermaid
 stateDiagram-v2
@@ -124,7 +124,7 @@ stateDiagram-v2
 
     note right of Active
         lifecycleState導出ルール
-        （TodayRoute.tsx、優先順）:
+        （deriveTodayLifecycleState、優先順）:
         todayTasks.length > 0  → active
         historyRecords[today].kind === 'rest' → rest
         historyRecords[today].kind === 'active' → done

@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import {
+  deriveTodayLifecycleState,
   removeHistoryRecord,
   resolveCancelReview,
   resolveStaleTodayTasks,
   resolveTodayStart,
+  toggleTodaySelection,
 } from './todayLifecycle'
 import type { Task } from '@/domain/task/task'
 import type { DailyHistoryRecord } from '@/domain/history/history'
@@ -16,6 +18,57 @@ const inbox: Task[] = [
   { id: 'inbox-1', title: '牛乳を買う', completed: false },
   { id: 'inbox-2', title: '部屋を片付ける', completed: false },
 ]
+
+describe('deriveTodayLifecycleState', () => {
+  const activeRecord: DailyHistoryRecord = { dateKey: '2026-10-14', kind: 'active', items: [] }
+  const restRecord: DailyHistoryRecord = { dateKey: '2026-10-14', kind: 'rest' }
+
+  it('todayTasksも当日の記録も無ければsetup', () => {
+    expect(deriveTodayLifecycleState([], undefined)).toBe('setup')
+  })
+
+  it('todayTasksがあればactive', () => {
+    expect(deriveTodayLifecycleState(inbox, undefined)).toBe('active')
+  })
+
+  it('当日がrestの記録ならrest', () => {
+    expect(deriveTodayLifecycleState([], restRecord)).toBe('rest')
+  })
+
+  it('当日がReview済み（kind: active）の記録ならdone', () => {
+    expect(deriveTodayLifecycleState([], activeRecord)).toBe('done')
+  })
+
+  it('todayTasksがあれば、当日の記録の種類に関わらずactiveを優先する', () => {
+    expect(deriveTodayLifecycleState(inbox, restRecord)).toBe('active')
+    expect(deriveTodayLifecycleState(inbox, activeRecord)).toBe('active')
+  })
+})
+
+describe('toggleTodaySelection', () => {
+  it('未選択のidは上限未満なら追加される', () => {
+    expect([...toggleTodaySelection(new Set(['a']), 'b', 3)]).toEqual(['a', 'b'])
+  })
+
+  it('選択済みのidは解除される', () => {
+    expect([...toggleTodaySelection(new Set(['a', 'b']), 'a', 3)]).toEqual(['b'])
+  })
+
+  it('上限に達している場合、未選択のidは追加されない', () => {
+    expect([...toggleTodaySelection(new Set(['a', 'b']), 'c', 2)]).toEqual(['a', 'b'])
+  })
+
+  it('上限に達していても、選択済みのidは解除できる', () => {
+    expect([...toggleTodaySelection(new Set(['a', 'b']), 'b', 2)]).toEqual(['a'])
+  })
+
+  it('元のSetは変更しない', () => {
+    const selected = new Set(['a'])
+    toggleTodaySelection(selected, 'b', 3)
+
+    expect([...selected]).toEqual(['a'])
+  })
+})
 
 describe('resolveTodayStart', () => {
   it('選択されたcarry-overはTodayへ入る', () => {
