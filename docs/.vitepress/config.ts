@@ -24,6 +24,8 @@ export default withMermaid(
             { text: '品質目標', link: '/quality-targets' },
             { text: '開発の進め方', link: '/development-workflow' },
             { text: '用語集', link: '/glossary' },
+            { text: 'しくみ（開発者以外の方向け）', link: '/how-it-works' },
+            { text: '2026年10月 リファクタリング', link: '/refactoring-2026-10' },
           ],
         },
       ],

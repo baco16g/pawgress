@@ -25,6 +25,7 @@ docs/ux-spec.md          — 情報設計 / interaction / user flow
   - 4.7 Settings変更
 - 5. Navigation / Route 一覧
 - 6. 永続化マップ
+- 7. 状態の持ち主と外部境界
 
 ---
 
@@ -39,10 +40,12 @@ docs/ux-spec.md          — 情報設計 / interaction / user flow
 | `router.tsx` に新しい route を追加/削除した | §1 レイヤーアーキテクチャ、§4 のシーケンス図 |
 | `dailyLifecycleReducer` に新しい action を追加/変更した | §3 ドメインモデル、§4.2〜§4.5、§5 |
 | `DailyLifecycleState` / `SettingsState` のフィールドを変更した | §3 ドメインモデル |
-| Today の lifecycle state（setup/active/rest 以外）を追加した | §2 状態遷移図 |
+| Today の lifecycle state（setup/active/rest/done）を追加・変更した | §2 状態遷移図 |
 | `app/persistence/` の永続化対象・キーを変更した | §4.1、§6 永続化マップ |
 | 新しい feature（画面カテゴリ）を追加した | §1 レイヤーアーキテクチャ |
 | featureディレクトリの内部規約（`routes/`・`<Screen>/components/`）を変更した | §1 レイヤーアーキテクチャ |
+| state を新たに持たせた・持ち主を移した、Bottom Navigation の表示制御を変えた | §7 状態の持ち主と外部境界 |
+| ブラウザ API・外部サービスとの接点を追加/削除した | §7 状態の持ち主と外部境界 |
 
 Mermaid のコードブロックは GitHub / GitLab 上でそのままレンダリングされます。新しい図を追加する場合も Mermaid 記法に統一し、スクリーンショットや外部ツール生成画像は使いません（テキストdiffでレビューできる状態を保ちます）。
 
@@ -417,6 +420,40 @@ Bottom Navigation を隠すのは Review だけです。`ReviewRoute` が `useHi
 | `SettingsState`（文字サイズ/テーマ/アニメーション/相棒種別/最大タスク量） | `pawgress.settings.v1` | `localStorage` | 変更の都度（`useEffect`） | 対象外（dateKeyを持たない） |
 | `DailyLifecycleState`（todayTasks/inboxCandidates/carryOverCandidates/historyRecords） | `pawgress.dailyLifecycle.v1` | `localStorage` | state変化の都度（`useEffect`、`persist=true`時のみ） | `todayTasks` は `resolveStaleTodayTasks` で `carryOverCandidates` へ退避（§4.1） |
 
-`persist` prop（`AppLayout` → `DailyLifecycleProvider`）は production entrypoint（`router.tsx`）でのみ `true` です。Storybook の `app/router/__fixtures__/*.stories.tsx` は指定せず、常に `INITIAL_LIFECYCLE_STATE` の固定 seed から始まります（再現性を優先し、localStorage には一切触れません）。
+`persist` prop（`AppLayout` → `DailyLifecycleProvider`）は production entrypoint（`router.tsx`）でのみ `true` です。Storybook の `app/router/__fixtures__/*.stories.tsx` やテストは指定せず、daily lifecycle は常に `INITIAL_LIFECYCLE_STATE` の固定 seed から始まり、その localStorage には触れません（再現性を優先）。`SettingsProvider` は `persist` に関係なく常に `pawgress.settings.v1` を読み書きするため、設定を変えるテストは前後で localStorage をクリアしています。
 
 両 storage は validate + try/catch で外部境界を守ります（壊れた/旧shapeのデータは安全に初期値へ fallback）。実装は `src/app/persistence/settingsStorage.ts` / `src/app/persistence/dailyLifecycleStorage.ts` を参照してください。
+
+---
+
+## 7. 状態の持ち主と外部境界
+
+### 7.1 state の持ち主
+
+state は、それを必要とする最も狭い範囲に置いています。画面コンポーネント（`*Screen`）は props だけを受け取り、context を読みません。context を読み、action を dispatch するのは route コンポーネント（`routes/*Route.tsx`）です。
+
+| state | 持ち主 | 書き換える経路 | 寿命 | 永続化 |
+|---|---|---|---|---|
+| `DailyLifecycleState` | `DailyLifecycleProvider`（`useReducer`） | route が `dispatch` → `dailyLifecycleReducer` | `AppLayout` がマウントされている間 | §6（`persist=true` のときのみ） |
+| `SettingsState` | `SettingsProvider`（`useState`） | `updateSettings` / `resetSettings` | 同上 | §6（常に） |
+| Bottom Navigation の表示（`hideNav`） | `AppLayout` 内の `NavVisibilityProvider` | `ReviewRoute` の `useHideNavWhileMounted()` だけ | 同上 | なし |
+| Today の選択中 id・休み取り消し直後フラグ | `TodayRoute`（`useState`） | Today 画面の操作 | `/today` にいる間。準備中・休みの切り替えでは保持され、別 route へ移ると破棄 | なし |
+| Review の振り分け（disposition） | `ReviewRoute`（`useState`） | Review 画面の操作 | `/review` にいる間。「1日を終える」で history record として確定 | なし |
+| History の表示月・選択日 | `HistoryRoute`（`useState`） | カレンダー操作 | `/history` にいる間 | なし |
+| 入力中のタスク名 | `InlineAddRow`（`useState`） | 入力 | 入力欄がマウントされている間 | なし |
+
+Today の画面（準備中・実行中・休み・完了）は state として持たず、`deriveTodayLifecycleState` で毎回導出します（§2）。
+
+### 7.2 外部境界
+
+アプリの外側と接する箇所は次に限られます。外部サーバーとの通信処理（`fetch` 等）はありません。
+
+| 接点 | 場所 | 扱い |
+|---|---|---|
+| `localStorage` | `src/app/persistence/` | 読み込み時に shape を検証し、壊れていれば初期値へ fallback。書き込み失敗は握りつぶす（§6） |
+| `document.documentElement` | `SettingsProvider` | `--font-scale`・`data-motion`・`data-theme` を設定に合わせて書き換える |
+| `window` の resize / `ResizeObserver` | `AppLayout` | Bottom Navigation の高さを測り、`--nav-reserved-height` に反映する |
+| 現在時刻 | `getProductDateKey`（`src/domain/product-day/productDay.ts`） | 午前4時を日付の区切りとして Product Day を求める |
+| `crypto.randomUUID` | `createTask`（`src/domain/task/task.ts`） | task id を生成。使えない環境では時刻と乱数から作る |
+| Service Worker | `vite.config.ts`（vite-plugin-pwa） | 本番ビルドでのみ登録され、アプリのファイルを precache する。タスクのデータは扱わない |
+| 配信 base path | `import.meta.env.BASE_URL` | router の basename とライセンス画面のリンクに使う（GitHub Pages の `/pawgress/` 配信） |
