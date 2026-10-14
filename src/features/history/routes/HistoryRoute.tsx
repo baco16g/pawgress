@@ -14,10 +14,8 @@ import {
   isFutureProductMonth,
   type ProductMonth,
 } from '@/domain/product-day/productDay'
-import { useShowNavOnMount } from '@/app/state/navVisibilityContext'
 
 export function HistoryRoute() {
-  useShowNavOnMount()
   const { state } = useDailyLifecycle()
   const { settings } = useSettings()
 

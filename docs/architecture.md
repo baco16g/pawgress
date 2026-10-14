@@ -404,6 +404,8 @@ graph LR
 
 Bottom Navigation（primary）: Today / Inbox / History の3つのみ。Review・Settings は contextual/utility destination としてのみ到達します（`docs/product-spec.md` §3）。
 
+Bottom Navigation を隠すのは Review だけです。`ReviewRoute` が `useHideNavWhileMounted()`（`src/app/state/navVisibilityContext.ts`）を呼び、表示中は非表示、離れると cleanup で再表示します。他の route は nav の表示状態に関与しません。
+
 ---
 
 ## 6. 永続化マップ

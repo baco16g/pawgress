@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useDailyLifecycle } from '@/app/state/dailyLifecycleContext'
 import { useSettings } from '@/app/state/settingsContext'
@@ -9,13 +9,11 @@ import { TodayRestScreen } from '@/features/today/TodayRestScreen/TodayRestScree
 import { TodaySetupScreen } from '@/features/today/TodaySetupScreen/TodaySetupScreen'
 import { canAddInboxTask } from '@/domain/daily-lifecycle/dailyLifecycleStore'
 import { formatTodayLabel, getProductDateKey } from '@/domain/product-day/productDay'
-import { useNavVisibility } from '@/app/state/navVisibilityContext'
 
 const MIN_SELECTION = 1
 
 export function TodayRoute() {
   const navigate = useNavigate()
-  const { setHideNav } = useNavVisibility()
   const { state, dispatch } = useDailyLifecycle()
   const { settings } = useSettings()
 
@@ -33,13 +31,6 @@ export function TodayRoute() {
           : 'setup'
   const [selectedIds, setSelectedIds] = useState<ReadonlySet<string>>(new Set())
   const [justCancelledRest, setJustCancelledRest] = useState(false)
-
-  useLayoutEffect(() => {
-    setHideNav(false)
-    return () => {
-      setHideNav(false)
-    }
-  }, [setHideNav])
 
   const handleToggleSelect = (id: string) => {
     setJustCancelledRest(false)

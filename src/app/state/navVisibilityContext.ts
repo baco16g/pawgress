@@ -15,10 +15,15 @@ export function useNavVisibility(): NavVisibilityContextValue {
   return context
 }
 
-export function useShowNavOnMount(): void {
+// 呼び出したrouteが表示されている間だけBottom Navigationを隠す。useEffectだと
+// 隠す前のnavが一度paintされてしまうため、paint前に走るuseLayoutEffectを使う。
+export function useHideNavWhileMounted(): void {
   const { setHideNav } = useNavVisibility()
 
   useLayoutEffect(() => {
-    setHideNav(false)
+    setHideNav(true)
+    return () => {
+      setHideNav(false)
+    }
   }, [setHideNav])
 }

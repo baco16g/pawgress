@@ -2,10 +2,8 @@ import { useNavigate } from 'react-router'
 import { useSettings } from '@/app/state/settingsContext'
 import { SettingsChoiceScreen } from '@/features/settings/SettingsChoiceScreen/SettingsChoiceScreen'
 import { MAX_TODAY_TASKS_OPTIONS } from '@/domain/settings/settings'
-import { useShowNavOnMount } from '@/app/state/navVisibilityContext'
 
 export function SettingsMaxTasksRoute() {
-  useShowNavOnMount()
   const { settings, updateSettings } = useSettings()
   const navigate = useNavigate()
 
