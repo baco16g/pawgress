@@ -8,6 +8,16 @@
 
 犬・猫の相棒と一緒に、今日のタスクに取り組み一日を振り返るモバイルファーストの TODO アプリ。
 
+## 公開ページ
+
+GitHub Pages で公開しています。`main` ブランチへの push で [.github/workflows/deploy-pages.yml](./.github/workflows/deploy-pages.yml) が3つをまとめてデプロイします。
+
+| ページ           | URL                                           | 内容                                              |
+| ---------------- | --------------------------------------------- | ------------------------------------------------- |
+| アプリケーション | https://baco16g.github.io/pawgress/           | Pawgress 本体                                     |
+| ドキュメント     | https://baco16g.github.io/pawgress/docs/      | `docs/` 配下の文書を VitePress でサイト化したもの |
+| Storybook        | https://baco16g.github.io/pawgress/storybook/ | UI コンポーネントと画面の Story                   |
+
 ## Core concept
 
 タスク管理の負担を減らすという設計思想、日次ループ、やらないことの一覧は [docs/product-spec.md](./docs/product-spec.md) にまとめています。
