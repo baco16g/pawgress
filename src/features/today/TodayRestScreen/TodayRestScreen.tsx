@@ -37,9 +37,7 @@ export function TodayRestScreen({
       }
       sheetContentClassName={styles.restSheetContent}
     >
-      {/* iconはlabelと同じ情報を繰り返すだけのためaria-hidden。well/tokenは
-          HistoryScreenのemptyIconWellと同じrecipeを再利用し、新しいtokenは
-          追加しない。 */}
+      {/* iconはlabelと同じ情報を繰り返すだけのためaria-hidden。 */}
       <div className={styles.restStatus}>
         <span className={styles.restStatusIconWell} aria-hidden="true">
           <Moon className={styles.restStatusIcon} size={28} strokeWidth={1.75} />
