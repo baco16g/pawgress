@@ -1,9 +1,7 @@
 import { useNavigate } from 'react-router'
 import { useSettings } from '@/app/state/settingsContext'
 import { SettingsChoiceScreen } from '@/features/settings/SettingsChoiceScreen/SettingsChoiceScreen'
-import { MOTION_LABEL, type MotionPreference } from '@/domain/settings/settings'
-
-const OPTIONS: MotionPreference[] = ['system', 'reduced']
+import { MOTION_LABEL, MOTION_OPTIONS, type MotionPreference } from '@/domain/settings/settings'
 
 export function SettingsMotionRoute() {
   const { settings, updateSettings } = useSettings()
@@ -13,7 +11,7 @@ export function SettingsMotionRoute() {
     <SettingsChoiceScreen<MotionPreference>
       title="アニメーション"
       selectedValue={settings.motion}
-      options={OPTIONS.map((value) => ({ value, label: MOTION_LABEL[value] }))}
+      options={MOTION_OPTIONS.map((value) => ({ value, label: MOTION_LABEL[value] }))}
       onSelect={(value) => {
         updateSettings({ motion: value })
         void navigate('/settings')

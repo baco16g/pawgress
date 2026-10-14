@@ -5,10 +5,9 @@ import { Companion } from '@/features/companion/ui/Companion/Companion'
 import { SettingsChoiceScreen } from '@/features/settings/SettingsChoiceScreen/SettingsChoiceScreen'
 import {
   COMPANION_SPECIES_LABEL,
+  COMPANION_SPECIES_OPTIONS,
   type CompanionSpeciesPreference,
 } from '@/domain/settings/settings'
-
-const OPTIONS: CompanionSpeciesPreference[] = ['dog', 'cat']
 
 export function SettingsCompanionRoute() {
   const { settings, updateSettings } = useSettings()
@@ -19,7 +18,7 @@ export function SettingsCompanionRoute() {
       title="相棒"
       selectedValue={settings.companionSpecies}
       layout="grid"
-      options={OPTIONS.map((value) => ({
+      options={COMPANION_SPECIES_OPTIONS.map((value) => ({
         value,
         label: COMPANION_SPECIES_LABEL[value],
         icon: (

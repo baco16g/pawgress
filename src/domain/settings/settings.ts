@@ -1,10 +1,15 @@
-export type CompanionSpeciesPreference = 'dog' | 'cat'
+// 各配列はSettingsの選択画面の表示順を兼ね、保存値の検証にも使う。
+export const COMPANION_SPECIES_OPTIONS = ['dog', 'cat'] as const
+export type CompanionSpeciesPreference = (typeof COMPANION_SPECIES_OPTIONS)[number]
 
-export type TextSizePreference = 'standard' | 'large' | 'extraLarge'
+export const TEXT_SIZE_OPTIONS = ['standard', 'large', 'extraLarge'] as const
+export type TextSizePreference = (typeof TEXT_SIZE_OPTIONS)[number]
 
-export type ThemePreference = 'system' | 'light' | 'dark'
+export const THEME_OPTIONS = ['system', 'light', 'dark'] as const
+export type ThemePreference = (typeof THEME_OPTIONS)[number]
 
-export type MotionPreference = 'system' | 'reduced'
+export const MOTION_OPTIONS = ['system', 'reduced'] as const
+export type MotionPreference = (typeof MOTION_OPTIONS)[number]
 
 export interface SettingsState {
   textSize: TextSizePreference

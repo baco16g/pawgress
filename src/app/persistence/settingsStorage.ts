@@ -1,6 +1,10 @@
 import {
+  COMPANION_SPECIES_OPTIONS,
   DEFAULT_SETTINGS,
   isValidMaxTodayTasks,
+  MOTION_OPTIONS,
+  TEXT_SIZE_OPTIONS,
+  THEME_OPTIONS,
   type SettingsState,
 } from '@/domain/settings/settings'
 
@@ -10,10 +14,10 @@ function isValidShape(value: unknown): value is SettingsState {
   if (typeof value !== 'object' || value === null) return false
   const v = value as Record<string, unknown>
   return (
-    (v.textSize === 'standard' || v.textSize === 'large' || v.textSize === 'extraLarge') &&
-    (v.theme === 'system' || v.theme === 'light' || v.theme === 'dark') &&
-    (v.motion === 'system' || v.motion === 'reduced') &&
-    (v.companionSpecies === 'dog' || v.companionSpecies === 'cat') &&
+    TEXT_SIZE_OPTIONS.some((option) => option === v.textSize) &&
+    THEME_OPTIONS.some((option) => option === v.theme) &&
+    MOTION_OPTIONS.some((option) => option === v.motion) &&
+    COMPANION_SPECIES_OPTIONS.some((option) => option === v.companionSpecies) &&
     typeof v.maxTodayTasks === 'number' &&
     isValidMaxTodayTasks(v.maxTodayTasks)
   )
