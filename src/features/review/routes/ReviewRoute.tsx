@@ -19,14 +19,15 @@ export function ReviewRoute() {
   const companionVariant = getDailyCompanionVariant(settings.companionSpecies, todayDateKey)
 
   const [dispositions, setDispositions] = useState<Record<string, Disposition>>({})
-  // 完了後の「戻る」やURLの直接入力で、実行中以外から開かれたReviewはTodayへ戻す。
-  // 判定を開いた時点に限るのは、「1日を終える」からTodayが描画されるまでの間に
-  // Reviewが空白になるのを避けるため。
-  const [openedWhileActive] = useState(
-    () => deriveTodayLifecycleState(tasks, state.historyRecords[todayDateKey]) === 'active',
+  // Reviewは実行中のTodayから開いた日のうちだけ表示する。開いた時点の状態で判定するのは、
+  // 「1日を終える」からTodayが描画されるまでの間にReviewが空白になるのを避けるため。
+  const [activeDateKeyWhenOpened] = useState(() =>
+    deriveTodayLifecycleState(tasks, state.historyRecords[todayDateKey]) === 'active'
+      ? todayDateKey
+      : null,
   )
 
-  if (!openedWhileActive) {
+  if (activeDateKeyWhenOpened !== todayDateKey) {
     return <Navigate to="/today" replace />
   }
 

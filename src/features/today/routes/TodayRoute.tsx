@@ -27,34 +27,37 @@ export function TodayRoute() {
     state.historyRecords[todayDateKey],
   )
   const [selectedIds, setSelectedIds] = useState<ReadonlySet<string>>(new Set())
-  const [justCancelledRest, setJustCancelledRest] = useState(false)
+  // 日付が変わる前の画面から押された取り消しは反映されないため、取り消した日が
+  // 今日のときだけ通知する。
+  const [restCancelledDateKey, setRestCancelledDateKey] = useState<string | null>(null)
+  const justCancelledRest = restCancelledDateKey === todayDateKey
 
   const handleToggleSelect = (id: string) => {
-    setJustCancelledRest(false)
+    setRestCancelledDateKey(null)
     setSelectedIds((current) => toggleTodaySelection(current, id, settings.maxTodayTasks))
   }
 
   const handleAddCandidate = (title: string) => {
-    setJustCancelledRest(false)
+    setRestCancelledDateKey(null)
     dispatch({ type: 'inbox/appendTask', title })
   }
 
   const handleStartToday = () => {
     if (selectedIds.size < MIN_TODAY_TASKS) return
 
-    setJustCancelledRest(false)
+    setRestCancelledDateKey(null)
     dispatch({ type: 'today/start', selectedIds })
     setSelectedIds(new Set())
   }
 
   const handleConfirmRest = () => {
-    setJustCancelledRest(false)
+    setRestCancelledDateKey(null)
     dispatch({ type: 'today/rest', dateKey: todayDateKey })
   }
 
   const handleCancelRest = () => {
     dispatch({ type: 'today/cancelRest', dateKey: todayDateKey })
-    setJustCancelledRest(true)
+    setRestCancelledDateKey(todayDateKey)
   }
 
   const handleCancelReview = () => {

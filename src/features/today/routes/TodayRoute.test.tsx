@@ -1,7 +1,7 @@
 import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router'
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AppLayout } from '@/app/router/AppLayout/AppLayout'
 import { ReviewRoute } from '@/features/review/routes/ReviewRoute'
 import { TodayRoute } from './TodayRoute'
@@ -261,5 +261,55 @@ describe('TodayRoute ↔ ReviewRoute — full daily loop', () => {
     // Doneから取り消してActiveへ戻ると、dispositionも含めて元のtodayTasksが復元される。
     await user.click(screen.getByRole('button', { name: '今日の完了を取り消す' }))
     expect(screen.getByRole('checkbox', { name: '牛乳を買う' })).toBeInTheDocument()
+  })
+})
+
+describe('TodayRoute ↔ ReviewRoute — 開いたまま日付が変わった場合', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date(2026, 9, 14, 22, 0))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('Review表示中に日付が変わると、タブの再表示でTodayへ戻り、前日のtaskは前回からの続きに入る', async () => {
+    const user = userEvent.setup()
+    const { router } = renderTodayAndReview()
+
+    await user.click(screen.getByRole('checkbox', { name: '牛乳を買う' }))
+    await user.click(screen.getByRole('button', { name: '今日をはじめる' }))
+    await user.click(screen.getByRole('button', { name: '今日を振り返る' }))
+    expect(screen.getByRole('heading', { name: '今日を振り返る' })).toBeInTheDocument()
+
+    vi.setSystemTime(new Date(2026, 9, 15, 9, 0))
+    await act(async () => {
+      document.dispatchEvent(new Event('visibilitychange'))
+      await Promise.resolve()
+    })
+
+    expect(router.state.location.pathname).toBe('/today')
+    expect(screen.getByRole('heading', { name: '今日をはじめる' })).toBeInTheDocument()
+    const carryOverSection = screen
+      .getByRole('heading', { name: '前回からの続き' })
+      .closest('section')
+    expect(carryOverSection).toHaveTextContent('牛乳を買う')
+  })
+
+  it('前日のお休み画面で「お休みを取り消す」を押しても、反映されない取り消しの通知は出さない', async () => {
+    const user = userEvent.setup()
+    renderTodayAndReview()
+
+    await user.click(screen.getByRole('button', { name: '今日は休む' }))
+    await user.click(screen.getByRole('button', { name: '休む' }))
+    expect(screen.getByRole('heading', { name: '今日はお休み' })).toBeInTheDocument()
+
+    // 再描画されないまま日付が変わり、前日の画面のボタンが押された状況。
+    vi.setSystemTime(new Date(2026, 9, 15, 9, 0))
+    await user.click(screen.getByRole('button', { name: 'お休みを取り消す' }))
+
+    expect(screen.getByRole('heading', { name: '今日をはじめる' })).toBeInTheDocument()
+    expect(screen.queryByText('お休みの設定を取り消しました。')).not.toBeInTheDocument()
   })
 })

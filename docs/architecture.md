@@ -144,7 +144,7 @@ stateDiagram-v2
 
 各 transition の action の詳細（発火元・効果）は §3 の action 一覧を参照してください。
 
-Review（`/review`）を表示するのは、開いた時点の Today が Active のときだけです。完了後のブラウザの「戻る」や URL の直接入力でそれ以外の状態から開かれた場合、`ReviewRoute` は `/today` へ replace で戻します。判定を開いた時点に限っているのは、「1日を終える」から Today が描画されるまでの間に Review が空白にならないようにするためです。
+Review（`/review`）を表示するのは、Active の Today から開いた日のうちだけです。完了後のブラウザの「戻る」や URL の直接入力でそれ以外の状態から開かれた場合や、表示中に日付が変わった場合（§4.1）、`ReviewRoute` は `/today` へ replace で戻します。Active かどうかを開いた時点で判定しているのは、「1日を終える」から Today が描画されるまでの間に Review が空白にならないようにするためです。
 
 ---
 
@@ -466,7 +466,7 @@ state は、それを必要とする最も狭い範囲に置いています。�
 | state が属する Product Day（`stateDateKey`） | `DailyLifecycleProvider`（`useState`） | 日付の変化を検知したとき（§4.1） | 同上 | 保存時の `dateKey` として使う |
 | `SettingsState` | `SettingsProvider`（`useState`） | `updateSettings` / `resetSettings` | 同上 | §6（常に） |
 | Bottom Navigation の表示（`hideNav`） | `AppLayout` 内の `NavVisibilityProvider` | `ReviewRoute` の `useHideNavWhileMounted()` だけ | 同上 | なし |
-| Today の選択中 id・休み取り消し直後フラグ | `TodayRoute`（`useState`） | Today 画面の操作 | `/today` にいる間。準備中・休みの切り替えでは保持され、別 route へ移ると破棄 | なし |
+| Today の選択中 id・休みを取り消した日 | `TodayRoute`（`useState`） | Today 画面の操作 | `/today` にいる間。準備中・休みの切り替えでは保持され、別 route へ移ると破棄 | なし |
 | Review の振り分け（disposition） | `ReviewRoute`（`useState`） | Review 画面の操作 | `/review` にいる間。「1日を終える」で history record として確定 | なし |
 | History の表示月・選択日 | `HistoryRoute`（`useState`） | カレンダー操作 | `/history` にいる間 | なし |
 | 入力中のタスク名 | `InlineAddRow`（`useState`） | 入力 | 入力欄がマウントされている間 | なし |
