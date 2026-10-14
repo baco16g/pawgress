@@ -6,7 +6,12 @@ import {
   buildRestHistoryRecord,
   type DailyHistoryRecord,
 } from '@/domain/history/history'
-import { removeHistoryRecord, resolveCancelReview, resolveTodayStart } from './todayLifecycle'
+import {
+  carryOverTodayTasks,
+  removeHistoryRecord,
+  resolveCancelReview,
+  resolveTodayStart,
+} from './todayLifecycle'
 
 export interface DailyLifecycleState {
   todayTasks: Task[]
@@ -48,6 +53,9 @@ export type DailyLifecycleAction =
     }
   | {
       type: 'today/abandon'
+    }
+  | {
+      type: 'today/rollover'
     }
 
 export function dailyLifecycleReducer(
@@ -156,6 +164,14 @@ export function dailyLifecycleReducer(
         todayTasks: [],
         inboxCandidates: [...state.inboxCandidates, ...abandonedTasks],
       }
+    }
+
+    case 'today/rollover': {
+      const { todayTasks, carryOverCandidates } = carryOverTodayTasks(
+        state.todayTasks,
+        state.carryOverCandidates,
+      )
+      return { ...state, todayTasks, carryOverCandidates }
     }
 
     default:

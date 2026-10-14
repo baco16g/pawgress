@@ -56,18 +56,28 @@ export interface StaleTodayResolution {
   carryOverCandidates: Task[]
 }
 
+export function carryOverTodayTasks(
+  todayTasks: Task[],
+  carryOverCandidates: Task[],
+): StaleTodayResolution {
+  if (todayTasks.length === 0) {
+    return { todayTasks, carryOverCandidates }
+  }
+
+  const revertedTasks = todayTasks.map((task) => ({ ...task, completed: false }))
+  return { todayTasks: [], carryOverCandidates: [...carryOverCandidates, ...revertedTasks] }
+}
+
 export function resolveStaleTodayTasks(
   todayTasks: Task[],
   carryOverCandidates: Task[],
   savedDateKey: string,
   currentDateKey: string,
 ): StaleTodayResolution {
-  if (savedDateKey === currentDateKey || todayTasks.length === 0) {
+  if (savedDateKey === currentDateKey) {
     return { todayTasks, carryOverCandidates }
   }
-
-  const revertedTasks = todayTasks.map((task) => ({ ...task, completed: false }))
-  return { todayTasks: [], carryOverCandidates: [...carryOverCandidates, ...revertedTasks] }
+  return carryOverTodayTasks(todayTasks, carryOverCandidates)
 }
 
 export function removeHistoryRecord(

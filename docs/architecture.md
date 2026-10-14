@@ -208,6 +208,7 @@ classDiagram
 | `review/complete` | Review「1日を終える」 | `historyRecords[dateKey]` を active record で確定、`todayTasks` を空に。`todayTasks` が空、または同じ日が rest record のときは no-op |
 | `today/cancelReview` | Today Done「今日の完了を取り消す」 | 対象 `dateKey` の active record から `todayTasks` を完了状態込みで復元、`carryOverCandidates`/`inboxCandidates` からそのrecordが振り分けた分を取り除き、record自体を削除 |
 | `today/abandon` | Today Active「今日をやめる」 | `todayTasks` を完了/未完了問わずすべて `inboxCandidates` へ（`completed`をfalseへリセット）、`todayTasks` を空に |
+| `today/rollover` | `DailyLifecycleProvider`（起動中に日付が変わったことを検知したとき、§4.1） | `todayTasks` を `completed` をfalseへリセットして `carryOverCandidates` 末尾へ、`todayTasks` を空に（起動時の日付またぎと同じ扱い） |
 
 ---
 
@@ -246,6 +247,30 @@ sequenceDiagram
         DailyLifecycleProvider->>DailyLifecycleProvider: INITIAL_LIFECYCLE_STATE（seed）
     end
     DailyLifecycleProvider-->>AppLayout: 初期state確定
+```
+
+起動中に日付が変わった場合も、同じ繰り越しを行います。`DailyLifecycleProvider` は state がどの Product Day のものか（`stateDateKey`）を持ち、保存にはこの日付を使います。保存した時刻の日付で保存すると、開いたまま日付をまたいだ操作で前日の `todayTasks` が今日のものとして保存され、次回起動時の繰り越しが働かなくなるためです。
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Route as 各route
+    participant Provider as DailyLifecycleProvider
+    participant Reducer as dailyLifecycleReducer
+
+    User->>Route: 操作（またはタブの再表示 = visibilitychange）
+    Route->>Provider: dispatch(action)
+    Provider->>Provider: getProductDateKey() と stateDateKey を比較
+    alt 日付が変わっている
+        Provider->>Reducer: dispatch(today/rollover)
+        Provider->>Provider: stateDateKey を今日に更新
+    end
+    alt action が前日の dateKey を持つ（日付が変わる前に描画された画面から）
+        Provider-->>Route: 反映しない（前日の record を書き換えないため）
+    else それ以外
+        Provider->>Reducer: dispatch(action)
+    end
+    Provider->>Provider: stateDateKey で保存
 ```
 
 ### 4.2 Today Setup → Active
@@ -421,7 +446,7 @@ Bottom Navigation を隠すのは Review だけです。`ReviewRoute` が `useHi
 | 対象 | storage key | 保存先 | 保存タイミング | 日付またぎ時の扱い |
 |---|---|---|---|---|
 | `SettingsState`（文字サイズ/テーマ/アニメーション/相棒種別/最大タスク量） | `pawgress.settings.v1` | `localStorage` | 変更の都度（`useEffect`） | 対象外（dateKeyを持たない） |
-| `DailyLifecycleState`（todayTasks/inboxCandidates/carryOverCandidates/historyRecords） | `pawgress.dailyLifecycle.v1` | `localStorage` | state変化の都度（`useEffect`、`persist=true`時のみ） | `todayTasks` は `resolveStaleTodayTasks` で `carryOverCandidates` へ退避（§4.1） |
+| `DailyLifecycleState`（todayTasks/inboxCandidates/carryOverCandidates/historyRecords） | `pawgress.dailyLifecycle.v1` | `localStorage` | state変化の都度（`useEffect`、`persist=true`時のみ）。`dateKey` は保存時刻ではなく state が属する Product Day | 起動時は `resolveStaleTodayTasks`、起動中は `today/rollover` で `todayTasks` を `carryOverCandidates` へ退避（§4.1） |
 
 `persist` prop（`AppLayout` → `DailyLifecycleProvider`）は production entrypoint（`router.tsx`）でのみ `true` です。Storybook の `app/router/__fixtures__/*.stories.tsx` やテストは指定せず、daily lifecycle は常に `INITIAL_LIFECYCLE_STATE` の固定 seed から始まり、その localStorage には触れません（再現性を優先）。`SettingsProvider` は `persist` に関係なく常に `pawgress.settings.v1` を読み書きするため、設定を変えるテストは前後で localStorage をクリアしています。
 
@@ -437,7 +462,8 @@ state は、それを必要とする最も狭い範囲に置いています。�
 
 | state | 持ち主 | 書き換える経路 | 寿命 | 永続化 |
 |---|---|---|---|---|
-| `DailyLifecycleState` | `DailyLifecycleProvider`（`useReducer`） | route が `dispatch` → `dailyLifecycleReducer` | `AppLayout` がマウントされている間 | §6（`persist=true` のときのみ） |
+| `DailyLifecycleState` | `DailyLifecycleProvider`（`useReducer`） | route が `dispatch` → provider が日付の変化を確認 → `dailyLifecycleReducer` | `AppLayout` がマウントされている間 | §6（`persist=true` のときのみ） |
+| state が属する Product Day（`stateDateKey`） | `DailyLifecycleProvider`（`useState`） | 日付の変化を検知したとき（§4.1） | 同上 | 保存時の `dateKey` として使う |
 | `SettingsState` | `SettingsProvider`（`useState`） | `updateSettings` / `resetSettings` | 同上 | §6（常に） |
 | Bottom Navigation の表示（`hideNav`） | `AppLayout` 内の `NavVisibilityProvider` | `ReviewRoute` の `useHideNavWhileMounted()` だけ | 同上 | なし |
 | Today の選択中 id・休み取り消し直後フラグ | `TodayRoute`（`useState`） | Today 画面の操作 | `/today` にいる間。準備中・休みの切り替えでは保持され、別 route へ移ると破棄 | なし |
@@ -457,6 +483,7 @@ Today の画面（準備中・実行中・休み・完了）は state として�
 | `document.documentElement` | `SettingsProvider` | `--font-scale`・`data-motion`・`data-theme` を設定に合わせて書き換える |
 | `window` の resize / `ResizeObserver` | `AppLayout` | Bottom Navigation の高さを測り、`--nav-reserved-height` に反映する |
 | 現在時刻 | `getProductDateKey`（`src/domain/product-day/productDay.ts`） | 午前4時を日付の区切りとして Product Day を求める |
+| `document` の `visibilitychange` | `DailyLifecycleProvider` | タブが再表示されたときに日付の変化を確認し、変わっていれば繰り越す（§4.1） |
 | `crypto.randomUUID` | `createTask`（`src/domain/task/task.ts`） | task id を生成。使えない環境では時刻と乱数から作る |
 | Service Worker | `vite.config.ts`（vite-plugin-pwa） | 本番ビルドでのみ登録され、アプリのファイルを precache する。タスクのデータは扱わない |
 | 配信 base path | `import.meta.env.BASE_URL` | router の basename とライセンス画面のリンクに使う（GitHub Pages の `/pawgress/` 配信） |

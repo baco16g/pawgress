@@ -738,6 +738,42 @@ describe('dailyLifecycleReducer', () => {
     })
   })
 
+  describe('today/rollover', () => {
+    it('todayTasksを未完了に戻してcarryOverCandidatesの末尾へ移し、Inboxとrecordには触れない', () => {
+      const milk = { ...createTask('牛乳を買う', 'today-1'), completed: true }
+      const doc = createTask('資料を確認する', 'today-2')
+      const state: DailyLifecycleState = {
+        todayTasks: [milk, doc],
+        inboxCandidates: [createTask('本を返す', 'inbox-1')],
+        carryOverCandidates: [createTask('メールを送る', 'carry-1')],
+        historyRecords: { '2026-10-03': { dateKey: '2026-10-03', kind: 'rest' } },
+      }
+
+      const next = dailyLifecycleReducer(state, { type: 'today/rollover' })
+
+      expect(next.todayTasks).toEqual([])
+      expect(next.carryOverCandidates).toEqual([
+        { id: 'carry-1', title: 'メールを送る', completed: false },
+        { id: 'today-1', title: '牛乳を買う', completed: false },
+        { id: 'today-2', title: '資料を確認する', completed: false },
+      ])
+      expect(next.inboxCandidates).toBe(state.inboxCandidates)
+      expect(next.historyRecords).toBe(state.historyRecords)
+    })
+
+    it('todayTasksが空ならtodayTasksとcarryOverCandidatesはそのまま', () => {
+      const state: DailyLifecycleState = {
+        ...emptyState(),
+        carryOverCandidates: [createTask('メールを送る', 'carry-1')],
+      }
+
+      const next = dailyLifecycleReducer(state, { type: 'today/rollover' })
+
+      expect(next.todayTasks).toBe(state.todayTasks)
+      expect(next.carryOverCandidates).toBe(state.carryOverCandidates)
+    })
+  })
+
   describe('today/abandon', () => {
     it('完了/未完了を問わずtodayTasksをすべてInboxへ戻し、completedをfalseへリセットする', () => {
       const milk = { ...createTask('牛乳を買う', 'inbox-1'), completed: true }

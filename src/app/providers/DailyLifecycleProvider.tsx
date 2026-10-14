@@ -1,7 +1,8 @@
-import { useEffect, useReducer, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useReducer, useState, type ReactNode } from 'react'
 import { DailyLifecycleContext } from '@/app/state/dailyLifecycleContext'
 import {
   dailyLifecycleReducer,
+  type DailyLifecycleAction,
   type DailyLifecycleState,
 } from '@/domain/daily-lifecycle/dailyLifecycleStore'
 import {
@@ -26,7 +27,7 @@ const FIRST_LAUNCH_STATE: DailyLifecycleState = {
   historyRecords: {},
 }
 
-function buildInitialState(persist: boolean): DailyLifecycleState {
+function buildInitialState(persist: boolean, currentDateKey: string): DailyLifecycleState {
   if (!persist) return INITIAL_LIFECYCLE_STATE
 
   const stored = loadDailyLifecycleState()
@@ -36,7 +37,7 @@ function buildInitialState(persist: boolean): DailyLifecycleState {
     stored.state.todayTasks,
     stored.state.carryOverCandidates,
     stored.dateKey,
-    getProductDateKey(),
+    currentDateKey,
   )
   return { ...stored.state, todayTasks, carryOverCandidates }
 }
@@ -47,16 +48,51 @@ export interface DailyLifecycleProviderProps {
 }
 
 export function DailyLifecycleProvider({ children, persist = false }: DailyLifecycleProviderProps) {
-  const [initialState] = useState(() => buildInitialState(persist))
-  const [state, dispatch] = useReducer(dailyLifecycleReducer, initialState)
+  const [initial] = useState(() => {
+    const dateKey = getProductDateKey()
+    return { dateKey, state: buildInitialState(persist, dateKey) }
+  })
+  const [state, dispatch] = useReducer(dailyLifecycleReducer, initial.state)
+  // stateがどのProduct Dayのものか。保存時刻ではなくこの日付で保存しないと、
+  // 開いたまま日付をまたいだ操作で前日のtodayTasksが今日のものとして保存される。
+  const [stateDateKey, setStateDateKey] = useState(initial.dateKey)
+
+  const rollOverIfDayChanged = useCallback((): string => {
+    const currentDateKey = getProductDateKey()
+    if (currentDateKey !== stateDateKey) {
+      setStateDateKey(currentDateKey)
+      dispatch({ type: 'today/rollover' })
+    }
+    return currentDateKey
+  }, [stateDateKey])
+
+  const dispatchForCurrentDay = useCallback(
+    (action: DailyLifecycleAction) => {
+      const currentDateKey = rollOverIfDayChanged()
+      // 日付が変わる前に描画された画面からの操作は、前日のrecordを書き換えてしまう。
+      if ('dateKey' in action && action.dateKey !== currentDateKey) return
+      dispatch(action)
+    },
+    [rollOverIfDayChanged],
+  )
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') rollOverIfDayChanged()
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [rollOverIfDayChanged])
 
   useEffect(() => {
     if (!persist) return
-    saveDailyLifecycleState(getProductDateKey(), state)
-  }, [persist, state])
+    saveDailyLifecycleState(stateDateKey, state)
+  }, [persist, state, stateDateKey])
 
   return (
-    <DailyLifecycleContext.Provider value={{ state, dispatch }}>
+    <DailyLifecycleContext.Provider value={{ state, dispatch: dispatchForCurrentDay }}>
       {children}
     </DailyLifecycleContext.Provider>
   )
