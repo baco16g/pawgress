@@ -144,6 +144,8 @@ stateDiagram-v2
 
 各 transition の action の詳細（発火元・効果）は §3 の action 一覧を参照してください。
 
+Review（`/review`）を表示するのは、開いた時点の Today が Active のときだけです。完了後のブラウザの「戻る」や URL の直接入力でそれ以外の状態から開かれた場合、`ReviewRoute` は `/today` へ replace で戻します。判定を開いた時点に限っているのは、「1日を終える」から Today が描画されるまでの間に Review が空白にならないようにするためです。
+
 ---
 
 ## 3. 主要ドメインモデル
@@ -203,7 +205,7 @@ classDiagram
 | `today/addTask` | Today Active の Inline Add | `todayTasks` 末尾へ直接追加（capacity判定なし） |
 | `today/rest` | Today Setup「今日は休む」確定 | `historyRecords[dateKey] = {kind:'rest'}` |
 | `today/cancelRest` | REST 画面「休む日をやめる」 | 対象 `dateKey` の rest record を削除 |
-| `review/complete` | Review「1日を終える」 | `historyRecords[dateKey]` を active record で確定、`todayTasks` を空に |
+| `review/complete` | Review「1日を終える」 | `historyRecords[dateKey]` を active record で確定、`todayTasks` を空に。`todayTasks` が空、または同じ日が rest record のときは no-op |
 | `today/cancelReview` | Today Done「今日の完了を取り消す」 | 対象 `dateKey` の active record から `todayTasks` を完了状態込みで復元、`carryOverCandidates`/`inboxCandidates` からそのrecordが振り分けた分を取り除き、record自体を削除 |
 | `today/abandon` | Today Active「今日をやめる」 | `todayTasks` を完了/未完了問わずすべて `inboxCandidates` へ（`completed`をfalseへリセット）、`todayTasks` を空に |
 
@@ -292,7 +294,8 @@ sequenceDiagram
     ReviewScreen->>ReviewRoute: onCompleteReview()
     ReviewRoute->>Reducer: dispatch(review/complete, tasks, dispositions, dateKey)
     Reducer-->>ReviewRoute: historyRecords[dateKey]確定、todayTasksを空に
-    ReviewRoute->>TodayRoute: navigate('/today')
+    ReviewRoute->>TodayRoute: navigate('/today', { replace: true })
+    Note over ReviewRoute,TodayRoute: replaceのため、ブラウザの「戻る」でReviewへは戻らない
     TodayRoute->>TodayDoneScreen: render（lifecycleState='done'）
 ```
 

@@ -14,7 +14,7 @@ function renderTodayRoute() {
   return render(<RouterProvider router={router} />)
 }
 
-function renderTodayAndReview() {
+function renderTodayAndReview(initialPath = '/today') {
   const router = createMemoryRouter(
     [
       {
@@ -25,7 +25,7 @@ function renderTodayAndReview() {
         ],
       },
     ],
-    { initialEntries: ['/today'] },
+    { initialEntries: [initialPath] },
   )
   const view = render(<RouterProvider router={router} />)
   return { ...view, router }
@@ -213,6 +213,37 @@ describe('TodayRoute ↔ ReviewRoute — full daily loop', () => {
     })
 
     expect(screen.getByRole('heading', { name: '今日のやること' })).toBeInTheDocument()
+    expect(screen.getByRole('navigation', { name: '主要な画面' })).toBeInTheDocument()
+  })
+
+  it('1日を終えた後に戻る操作をしてもReviewは開かず、その日の記録は保持される', async () => {
+    const user = userEvent.setup()
+    const { router } = renderTodayAndReview()
+
+    await user.click(screen.getByRole('checkbox', { name: '牛乳を買う' }))
+    await user.click(screen.getByRole('button', { name: '今日をはじめる' }))
+    await user.click(screen.getByRole('checkbox', { name: '牛乳を買う' }))
+    await user.click(screen.getByRole('button', { name: '今日を振り返る' }))
+    await user.click(screen.getByRole('button', { name: '1日を終える' }))
+
+    await act(async () => {
+      await router.navigate(-1)
+    })
+
+    expect(router.state.location.pathname).toBe('/today')
+    expect(screen.getByRole('heading', { name: '今日はここまで' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: '1日を終える' })).not.toBeInTheDocument()
+
+    // 記録が残っていれば、取り消しで完了済みのtaskが復元される。
+    await user.click(screen.getByRole('button', { name: '今日の完了を取り消す' }))
+    expect(screen.getByRole('checkbox', { name: '牛乳を買う' })).toBeChecked()
+  })
+
+  it('実行中でないときに/reviewを開くと、Todayへ戻される', () => {
+    const { router } = renderTodayAndReview('/review')
+
+    expect(router.state.location.pathname).toBe('/today')
+    expect(screen.getByRole('heading', { name: '今日をはじめる' })).toBeInTheDocument()
     expect(screen.getByRole('navigation', { name: '主要な画面' })).toBeInTheDocument()
   })
 

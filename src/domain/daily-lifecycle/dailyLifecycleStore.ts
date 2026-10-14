@@ -92,6 +92,9 @@ export function dailyLifecycleReducer(
       return { ...state, todayTasks: [...state.todayTasks, createTask(action.title)] }
 
     case 'review/complete': {
+      // todayTasksが空のまま完了すると、その日のrecordを空の内容で上書きしてしまう
+      // （完了直後の連打や、完了後に戻る操作で開いたReviewから届く）。
+      if (state.todayTasks.length === 0) return state
       if (state.historyRecords[action.dateKey]?.kind === 'rest') return state
 
       const { carryOverCandidates, inboxCandidates } = resolveDailyReview(

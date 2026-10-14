@@ -387,6 +387,32 @@ describe('dailyLifecycleReducer', () => {
       }
     })
 
+    it('todayTasksが空のときはno-opで、その日のrecordを空の内容で上書きしない', () => {
+      const milk = createTask('牛乳を買う', 't1')
+      let state: DailyLifecycleState = { ...emptyState(), todayTasks: [milk] }
+      state = dailyLifecycleReducer(state, {
+        type: 'review/complete',
+        tasks: [{ ...milk, completed: true }],
+        dispositions: {},
+        dateKey: '2026-10-04',
+      })
+      expect(state.todayTasks).toEqual([])
+
+      const afterFirstComplete = state
+      state = dailyLifecycleReducer(state, {
+        type: 'review/complete',
+        tasks: [],
+        dispositions: {},
+        dateKey: '2026-10-04',
+      })
+
+      expect(state).toBe(afterFirstComplete)
+      const record = state.historyRecords['2026-10-04']
+      expect(record?.kind === 'active' ? record.items : []).toEqual([
+        { taskId: 't1', title: '牛乳を買う', outcome: 'completed' },
+      ])
+    })
+
     it('異なるdateKeyのcompletionは別recordとして両方残る', () => {
       const day1Task = createTask('day1のタスク', 't1')
       let state: DailyLifecycleState = {
@@ -559,7 +585,7 @@ describe('dailyLifecycleReducer', () => {
 
     it('対象dateKeyのrecordがREST以外（例: active）のときはno-op', () => {
       const milk = { ...createTask('牛乳を買う', 't1'), completed: true }
-      let state = emptyState()
+      let state: DailyLifecycleState = { ...emptyState(), todayTasks: [milk] }
       state = dailyLifecycleReducer(state, {
         type: 'review/complete',
         tasks: [milk],
