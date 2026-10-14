@@ -1,9 +1,6 @@
 import { Check } from 'lucide-react'
 import type { CompanionSpecies } from '@/features/companion/model/companion'
-import { getCompanionAtmospherePreset } from '@/features/companion/model/companionAtmosphere'
 import type { CompanionVariant } from '@/features/companion/model/companionAssets'
-import { getCompanionVisualScale } from '@/features/companion/model/companionPresentation'
-import { Companion } from '@/features/companion/ui/Companion/Companion'
 import { Button } from '@/shared/ui/Button/Button'
 import { AtmosphereScreenShell } from '@/features/companion/ui/AtmosphereScreenShell/AtmosphereScreenShell'
 import { useFocusOnMount } from '@/shared/hooks/useFocusOnMount'
@@ -24,29 +21,18 @@ export function TodayDoneScreen({
   onCancelReview,
   onOpenSettings,
 }: TodayDoneScreenProps) {
-  const atmospherePreset = getCompanionAtmospherePreset(companionVariant)
-  const companionScale = getCompanionVisualScale(companionVariant)
   const headingRef = useFocusOnMount<HTMLHeadingElement>()
 
   return (
     <AtmosphereScreenShell
       todayLabel={todayLabel}
-      atmospherePreset={atmospherePreset}
+      companion={{ species: companionSpecies, variant: companionVariant, state: 'completed' }}
       atmosphereModifier="sage"
       onOpenSettings={onOpenSettings}
       heading="今日はここまで"
       headingRef={headingRef}
       headingTabIndex={-1}
       afterHeading={<p className={styles.supportingText}>また明日、新しい今日をはじめましょう。</p>}
-      companion={
-        <Companion
-          species={companionSpecies}
-          variant={companionVariant}
-          state="completed"
-          size={`calc(clamp(240px, 105vw, 420px) * ${String(companionScale)})`}
-          framed={false}
-        />
-      }
       sheetContentClassName={styles.doneSheetContent}
     >
       <div className={styles.doneStatus}>

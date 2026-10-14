@@ -1,9 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import type { CompanionSpecies } from '@/features/companion/model/companion'
-import { getCompanionAtmospherePreset } from '@/features/companion/model/companionAtmosphere'
 import { VARIANT_LABEL, type CompanionVariant } from '@/features/companion/model/companionAssets'
-import { getCompanionVisualScale } from '@/features/companion/model/companionPresentation'
-import { Companion } from '@/features/companion/ui/Companion/Companion'
 import { InlineAddRow } from '@/shared/ui/InlineAddRow/InlineAddRow'
 import { RestAction } from '@/features/today/TodaySetupScreen/components/RestAction'
 import { SelectionList } from '@/features/today/TodaySetupScreen/components/SelectionList'
@@ -50,8 +47,6 @@ export function TodaySetupScreen({
 }: TodaySetupScreenProps) {
   const limitHintId = useId()
   const capacityMessageId = useId()
-  const atmospherePreset = getCompanionAtmospherePreset(companionVariant)
-  const companionScale = getCompanionVisualScale(companionVariant)
   const selectedCount = selectedIds.size
   const isMaxReached = selectedCount >= maxSelection
   const isBelowMinimum = selectedCount < minSelection
@@ -70,23 +65,18 @@ export function TodaySetupScreen({
     <>
       <AtmosphereScreenShell
         todayLabel={todayLabel}
-        atmospherePreset={atmospherePreset}
+        companion={{
+          species: companionSpecies,
+          variant: companionVariant,
+          state: 'idle',
+          variantLabel: VARIANT_LABEL[companionVariant],
+        }}
         atmosphereModifier="peach"
         onOpenSettings={onOpenSettings}
         heading="今日をはじめる"
         headingRef={headingRef}
         headingTabIndex={-1}
         afterHeading={<p className={styles.supportingText}>今日やることを選びましょう。</p>}
-        companion={
-          <Companion
-            species={companionSpecies}
-            variant={companionVariant}
-            state="idle"
-            size={`calc(clamp(240px, 105vw, 420px) * ${String(companionScale)})`}
-            framed={false}
-            variantLabel={VARIANT_LABEL[companionVariant]}
-          />
-        }
         afterCompanion={
           <p className={styles.companionVariantLabel}>{VARIANT_LABEL[companionVariant]}</p>
         }

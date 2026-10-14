@@ -1,13 +1,17 @@
 import clsx from 'clsx'
 import { Settings } from 'lucide-react'
 import type { ReactNode, Ref } from 'react'
-import type { AtmospherePreset } from '../../model/companionAtmosphere'
+import { getCompanionAtmospherePreset } from '../../model/companionAtmosphere'
+import { getCompanionVisualScale } from '../../model/companionPresentation'
 import { AtmosphereWave } from '../AtmosphereWave/AtmosphereWave'
+import { Companion, type CompanionProps } from '../Companion/Companion'
 import styles from './AtmosphereScreenShell.module.css'
+
+type AtmosphereCompanion = Pick<CompanionProps, 'species' | 'variant' | 'state' | 'variantLabel'>
 
 export interface AtmosphereScreenShellProps {
   todayLabel: string
-  atmospherePreset: AtmospherePreset
+  companion: AtmosphereCompanion
   atmosphereModifier?: 'peach' | 'sage'
   onOpenSettings?: () => void
   reserveNavSpace?: boolean
@@ -15,7 +19,6 @@ export interface AtmosphereScreenShellProps {
   headingRef?: Ref<HTMLHeadingElement>
   headingTabIndex?: number
   afterHeading?: ReactNode
-  companion: ReactNode
   afterCompanion?: ReactNode
   sheetContentClassName?: string
   children: ReactNode
@@ -23,7 +26,7 @@ export interface AtmosphereScreenShellProps {
 
 export function AtmosphereScreenShell({
   todayLabel,
-  atmospherePreset,
+  companion,
   atmosphereModifier,
   onOpenSettings,
   reserveNavSpace = true,
@@ -31,11 +34,13 @@ export function AtmosphereScreenShell({
   headingRef,
   headingTabIndex,
   afterHeading,
-  companion,
   afterCompanion,
   sheetContentClassName,
   children,
 }: AtmosphereScreenShellProps) {
+  const atmospherePreset = getCompanionAtmospherePreset(companion.variant)
+  const companionScale = getCompanionVisualScale(companion.variant)
+
   return (
     <main className={styles.page}>
       <div
@@ -64,7 +69,16 @@ export function AtmosphereScreenShell({
         </h1>
         {afterHeading}
 
-        <div className={styles.companionWrap}>{companion}</div>
+        <div className={styles.companionWrap}>
+          <Companion
+            species={companion.species}
+            variant={companion.variant}
+            state={companion.state}
+            size={`calc(clamp(240px, 105vw, 420px) * ${String(companionScale)})`}
+            framed={false}
+            variantLabel={companion.variantLabel}
+          />
+        </div>
         {afterCompanion}
       </div>
 

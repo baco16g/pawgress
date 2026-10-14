@@ -1,9 +1,6 @@
 import { ArrowRight } from 'lucide-react'
 import type { CompanionSpecies, CompanionState } from '@/features/companion/model/companion'
-import { getCompanionAtmospherePreset } from '@/features/companion/model/companionAtmosphere'
 import type { CompanionVariant } from '@/features/companion/model/companionAssets'
-import { getCompanionVisualScale } from '@/features/companion/model/companionPresentation'
-import { Companion } from '@/features/companion/ui/Companion/Companion'
 import { InlineAddRow } from '@/shared/ui/InlineAddRow/InlineAddRow'
 import { TaskList } from '@/features/today/TodayActiveScreen/components/TaskList'
 import { AbandonTodayAction } from '@/features/today/TodayActiveScreen/components/AbandonTodayAction'
@@ -44,13 +41,15 @@ export function TodayActiveScreen({
 }: TodayActiveScreenProps) {
   const completedCount = tasks.filter((task) => task.completed).length
   const allCompleted = tasks.length > 0 && completedCount === tasks.length
-  const atmospherePreset = getCompanionAtmospherePreset(companionVariant)
-  const companionScale = getCompanionVisualScale(companionVariant)
 
   return (
     <AtmosphereScreenShell
       todayLabel={todayLabel}
-      atmospherePreset={atmospherePreset}
+      companion={{
+        species: companionSpecies,
+        variant: companionVariant,
+        state: deriveCompanionState(tasks),
+      }}
       atmosphereModifier={allCompleted ? 'sage' : undefined}
       onOpenSettings={onOpenSettings}
       heading="今日のやること"
@@ -60,15 +59,6 @@ export function TodayActiveScreen({
             {completedCount}/{tasks.length} 完了
           </p>
         ) : undefined
-      }
-      companion={
-        <Companion
-          species={companionSpecies}
-          variant={companionVariant}
-          state={deriveCompanionState(tasks)}
-          size={`calc(clamp(240px, 105vw, 420px) * ${String(companionScale)})`}
-          framed={false}
-        />
       }
       sheetContentClassName={styles.taskSheetContent}
     >

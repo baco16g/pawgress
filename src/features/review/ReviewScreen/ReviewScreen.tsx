@@ -1,9 +1,6 @@
 import { Check } from 'lucide-react'
 import type { CompanionSpecies, CompanionState } from '@/features/companion/model/companion'
-import { getCompanionAtmospherePreset } from '@/features/companion/model/companionAtmosphere'
 import type { CompanionVariant } from '@/features/companion/model/companionAssets'
-import { getCompanionVisualScale } from '@/features/companion/model/companionPresentation'
-import { Companion } from '@/features/companion/ui/Companion/Companion'
 import { DispositionRow } from '@/features/review/DispositionRow/DispositionRow'
 import { AtmosphereScreenShell } from '@/features/companion/ui/AtmosphereScreenShell/AtmosphereScreenShell'
 import { isDailyReviewResolved, type Disposition } from '@/domain/review/dailyReview'
@@ -38,8 +35,6 @@ export function ReviewScreen({
 }: ReviewScreenProps) {
   const completedTasks = tasks.filter((task) => task.completed)
   const unfinishedTasks = tasks.filter((task) => !task.completed)
-  const atmospherePreset = getCompanionAtmospherePreset(companionVariant)
-  const companionScale = getCompanionVisualScale(companionVariant)
   const allCompleted = tasks.length > 0 && unfinishedTasks.length === 0
   const canComplete = isDailyReviewResolved(tasks, dispositions)
   const headingRef = useFocusOnMount<HTMLHeadingElement>()
@@ -47,22 +42,17 @@ export function ReviewScreen({
   return (
     <AtmosphereScreenShell
       todayLabel={todayLabel}
-      atmospherePreset={atmospherePreset}
+      companion={{
+        species: companionSpecies,
+        variant: companionVariant,
+        state: deriveReviewCompanionState(tasks),
+      }}
       atmosphereModifier={allCompleted ? 'sage' : undefined}
       reserveNavSpace={false}
       heading="今日を振り返る"
       headingRef={headingRef}
       headingTabIndex={-1}
       afterHeading={<p className={styles.supportingText}>今日のタスクを確認しましょう。</p>}
-      companion={
-        <Companion
-          species={companionSpecies}
-          variant={companionVariant}
-          state={deriveReviewCompanionState(tasks)}
-          size={`calc(clamp(240px, 105vw, 420px) * ${String(companionScale)})`}
-          framed={false}
-        />
-      }
       sheetContentClassName={styles.reviewSheetContent}
     >
       {completedTasks.length > 0 ? (
