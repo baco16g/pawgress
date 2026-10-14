@@ -2,7 +2,7 @@ import { CalendarDays } from 'lucide-react'
 import type { AtmospherePreset } from '@/features/companion/model/companionAtmosphere'
 import { AtmosphereWave } from '@/features/companion/ui/AtmosphereWave/AtmosphereWave'
 import { HistoryCalendar } from '@/features/history/HistoryCalendar/HistoryCalendar'
-import type { DailyHistoryRecord } from '@/domain/history/history'
+import type { DailyHistoryRecord, HistoryOutcome } from '@/domain/history/history'
 import type { CalendarDayViewModel } from '@/domain/history/historyCalendar'
 import { formatMonthDayLabel } from '@/domain/product-day/productDay'
 import { useFocusOnMount } from '@/shared/hooks/useFocusOnMount'
@@ -21,7 +21,7 @@ export interface HistoryScreenProps {
   atmospherePreset?: AtmospherePreset
 }
 
-const OUTCOME_LABEL: Record<string, string> = {
+const OUTCOME_LABEL: Record<HistoryOutcome, string> = {
   completed: '完了',
   carryOver: '明日に持ち越した',
   inbox: 'Inboxへ戻した',
