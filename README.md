@@ -22,8 +22,6 @@
 | [docs/quality-targets.md](./docs/quality-targets.md)           | パフォーマンス・アクセシビリティ・品質目標                  |
 | [docs/development-workflow.md](./docs/development-workflow.md) | 企画の背景・開発の進め方                                    |
 | [docs/glossary.md](./docs/glossary.md)                         | 用語集（ユビキタス言語）                                    |
-| [docs/how-it-works.md](./docs/how-it-works.md)                 | 開発者以外の方向けの説明（ルール・データの保存先・制限）    |
-| [docs/refactoring-2026-10.md](./docs/refactoring-2026-10.md)   | 2026年10月の構造リファクタリングのレビュー資料              |
 
 ## Where to start（レビューの読み進め方）
 
