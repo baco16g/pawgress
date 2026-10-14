@@ -4,8 +4,8 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { NavLink, Outlet } from 'react-router'
 import { DailyLifecycleProvider } from '@/app/providers/DailyLifecycleProvider'
 import { SettingsProvider } from '@/app/providers/SettingsProvider'
+import { NavVisibilityContext, useNavVisibility } from '@/app/state/navVisibilityContext'
 import styles from './AppLayout.module.css'
-import { NavVisibilityContext, useNavVisibility } from '../navVisibilityContext'
 
 // lucideの標準Inboxはslot線→tray本体の順にpaintするため、active状態でfillすると
 // slotが隠れる。同じpath dataを描画順だけ入れ替え、nav barでのみ使う

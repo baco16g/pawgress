@@ -12,8 +12,8 @@ const layerOrder = ['app', 'features', 'domain', 'shared']
 
 const architectureLayers = [
   // app/stateはapp全体より先に登録し、より広い'app'パターンより優先してマッチさせる。
-  // featuresはapp-provided context hook（dailyLifecycleContext/settingsContext）を
-  // 消費してよいが、app/router・app/providersの実装には立ち入らない、という
+  // featuresはapp/state配下のcontext hookを消費してよいが、
+  // app/router・app/providersの実装には立ち入らない、という
   // 狭い例外をpolicyで表現するための区分。
   { type: 'app-state', pattern: 'src/app/state/**' },
   ...layerOrder.map((type) => ({ type, pattern: `src/${type}/**` })),
@@ -66,15 +66,7 @@ export default defineConfig(
       },
       'boundaries/include': ['src/**/*'],
       'boundaries/elements': architectureLayers,
-      // navVisibilityContextはapp/router直下の1 fileだが、dailyLifecycleContext/
-      // settingsContextと同じ「featuresが消費してよいapp-provided context」のため、
-      // boundary判定の対象外とする（elementはfolder単位のみ対応、file単位のtypeは
-      // 作れないための回避）。
-      'boundaries/ignore': [
-        'src/**/*.stories.tsx',
-        'src/**/*.test.{ts,tsx}',
-        'src/app/router/navVisibilityContext.ts',
-      ],
+      'boundaries/ignore': ['src/**/*.stories.tsx', 'src/**/*.test.{ts,tsx}'],
     },
     rules: {
       ...reactHooks.configs.recommended.rules,

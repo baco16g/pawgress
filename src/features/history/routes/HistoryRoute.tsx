@@ -14,7 +14,7 @@ import {
   isFutureProductMonth,
   type ProductMonth,
 } from '@/domain/product-day/productDay'
-import { useShowNavOnMount } from '@/app/router/navVisibilityContext'
+import { useShowNavOnMount } from '@/app/state/navVisibilityContext'
 
 export function HistoryRoute() {
   useShowNavOnMount()

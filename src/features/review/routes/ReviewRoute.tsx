@@ -6,7 +6,7 @@ import { getDailyCompanionVariant } from '@/features/companion/model/companionAs
 import { ReviewScreen } from '@/features/review/ReviewScreen/ReviewScreen'
 import type { Disposition } from '@/domain/review/dailyReview'
 import { formatTodayLabel, getProductDateKey } from '@/domain/product-day/productDay'
-import { useNavVisibility } from '@/app/router/navVisibilityContext'
+import { useNavVisibility } from '@/app/state/navVisibilityContext'
 
 export function ReviewRoute() {
   const navigate = useNavigate()

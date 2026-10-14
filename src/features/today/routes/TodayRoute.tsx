@@ -9,7 +9,7 @@ import { TodayRestScreen } from '@/features/today/TodayRestScreen/TodayRestScree
 import { TodaySetupScreen } from '@/features/today/TodaySetupScreen/TodaySetupScreen'
 import { canAddInboxTask } from '@/domain/daily-lifecycle/dailyLifecycleStore'
 import { formatTodayLabel, getProductDateKey } from '@/domain/product-day/productDay'
-import { useNavVisibility } from '@/app/router/navVisibilityContext'
+import { useNavVisibility } from '@/app/state/navVisibilityContext'
 
 const MIN_SELECTION = 1
 

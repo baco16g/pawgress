@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router'
 import { useSettings } from '@/app/state/settingsContext'
 import { SettingsChoiceScreen } from '@/features/settings/SettingsChoiceScreen/SettingsChoiceScreen'
 import { THEME_LABEL, type ThemePreference } from '@/domain/settings/settings'
-import { useShowNavOnMount } from '@/app/router/navVisibilityContext'
+import { useShowNavOnMount } from '@/app/state/navVisibilityContext'
 
 const OPTIONS: ThemePreference[] = ['system', 'light', 'dark']
 

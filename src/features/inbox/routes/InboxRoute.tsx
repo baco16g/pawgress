@@ -5,7 +5,7 @@ import { getDailyCompanionVariant } from '@/features/companion/model/companionAs
 import { InboxScreen } from '@/features/inbox/InboxScreen/InboxScreen'
 import { canAddInboxTask } from '@/domain/daily-lifecycle/dailyLifecycleStore'
 import { getProductDateKey } from '@/domain/product-day/productDay'
-import { useShowNavOnMount } from '@/app/router/navVisibilityContext'
+import { useShowNavOnMount } from '@/app/state/navVisibilityContext'
 
 export function InboxRoute() {
   useShowNavOnMount()

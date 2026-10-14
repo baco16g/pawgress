@@ -56,12 +56,11 @@ Mermaid のコードブロックは GitHub / GitLab 上でそのままレンダ�
 graph TD
     subgraph App["app/ （composition専用）"]
         Router["app/router/<br/>router.tsx, AppLayout/"]
-        NavVisibility["app/router/navVisibilityContext.ts<br/>(app-state同様の例外)"]
         Providers["app/providers/<br/>DailyLifecycleProvider, SettingsProvider, ErrorBoundary"]
-        State["app/state/<br/>dailyLifecycleContext, settingsContext (app-state)"]
+        State["app/state/<br/>dailyLifecycleContext, settingsContext,<br/>navVisibilityContext (app-state)"]
         Persistence["app/persistence/<br/>dailyLifecycleStorage, settingsStorage"]
         Styles["app/styles/<br/>tokens.css, global.css, references/"]
-        Router ~~~ NavVisibility ~~~ Providers ~~~ State ~~~ Persistence ~~~ Styles
+        Router ~~~ Providers ~~~ State ~~~ Persistence ~~~ Styles
     end
 
     subgraph Features["features/ （製品機能ごと）"]
@@ -98,7 +97,6 @@ graph TD
     Features --> Domain
     Features --> Shared
     Features -. "narrow exception" .-> State
-    Features -. "narrow exception" .-> NavVisibility
 ```
 
 **featureディレクトリの内部規約**:

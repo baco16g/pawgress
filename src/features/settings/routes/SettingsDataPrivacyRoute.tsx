@@ -1,6 +1,6 @@
 import { useSettings } from '@/app/state/settingsContext'
 import { SettingsDataPrivacyScreen } from '@/features/settings/SettingsDataPrivacyScreen/SettingsDataPrivacyScreen'
-import { useShowNavOnMount } from '@/app/router/navVisibilityContext'
+import { useShowNavOnMount } from '@/app/state/navVisibilityContext'
 
 export function SettingsDataPrivacyRoute() {
   useShowNavOnMount()

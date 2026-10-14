@@ -6,7 +6,7 @@ import {
   TEXT_SIZE_LABEL,
   THEME_LABEL,
 } from '@/domain/settings/settings'
-import { useShowNavOnMount } from '@/app/router/navVisibilityContext'
+import { useShowNavOnMount } from '@/app/state/navVisibilityContext'
 
 export function SettingsRoute() {
   useShowNavOnMount()

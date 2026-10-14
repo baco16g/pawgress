@@ -7,7 +7,7 @@ import {
   COMPANION_SPECIES_LABEL,
   type CompanionSpeciesPreference,
 } from '@/domain/settings/settings'
-import { useShowNavOnMount } from '@/app/router/navVisibilityContext'
+import { useShowNavOnMount } from '@/app/state/navVisibilityContext'
 
 const OPTIONS: CompanionSpeciesPreference[] = ['dog', 'cat']
 
